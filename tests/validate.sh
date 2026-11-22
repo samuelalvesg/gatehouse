@@ -61,4 +61,19 @@ for lf in "$root"/profiles/*/LAYERS; do
   if "$root/install.sh" "$t" --profile "$prof" --check >/dev/null; then echo "profile $prof: --check missed an unknown skill"; fail=1; fi
   rm -rf "$t"
 done
+
+# The Dart layers are copies of template/ files: agents differ only by the
+# TEAM.md pointer, skills are byte-identical (verify-delivery is per repo).
+for f in "$root"/profiles/dart-base/root/.claude/agents/*.md; do
+  n="$(basename "$f")"
+  sed 's#following `AGENTS.md`#following `.claude/TEAM.md`#; s#standard handoff format in `AGENTS.md`#standard handoff format in `.claude/TEAM.md`#' \
+    "$root/template/.agents/agents/$n" | cmp -s - "$f" || { echo "dart-base agent drifted from template: $n"; fail=1; }
+done
+for layer in dart-base flutter-ui example-app example-ui; do
+  for d in "$root"/profiles/$layer/root/.claude/skills/*/; do
+    n="$(basename "$d")"
+    [ "$n" = "verify-delivery" ] && continue
+    diff -r "$d" "$root/template/.agents/skills/$n" >/dev/null 2>&1 || { echo "$layer skill drifted from template: $n"; fail=1; }
+  done
+done
 exit $fail
