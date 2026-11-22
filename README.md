@@ -60,9 +60,17 @@ plugin para o repo só quando for adaptar, com a origem no `NOTICE.md`.
 A skill `verify-delivery` é o gate de entrega do repo: preencher os comandos
 (os mesmos do CI). `@developer`, `@qa-engineer` e `@reviewer` a citam.
 
+## Perfis dos repositórios example
+
+`profiles/` guarda a configuração exata dos repos example, example-backend,
+example-frontend e example-edge (agentes com SOUL, skills, regras, MCP, plugins):
+este repo é a fonte e os repos recebem a cópia com
+`./install.sh <repo> --profile <nome> --force`; `--check` confere se a cópia do
+repo continua igual. Detalhes em [`profiles/README.md`](profiles/README.md).
+
 ## Fora do template (de propósito)
 
-`rust-dev` e `backend-dev`/`frontend-dev` específicos (viram cópias do `developer`), perfis de modelo local (Ollama), skills `local-llama-bridge`, `auto-doc-updater`, `diagram-generator`, `query-performance-tuner`, `telemetry-tracing`, `ux-copy-ptbr` e o `.agents/` (MCP próprios): acopladas ao example. Copiar do repo de origem sob demanda.
+`rust-dev` e `backend-dev`/`frontend-dev` específicos (viram cópias do `developer`), perfis de modelo local (Ollama), skills `local-llama-bridge`, `auto-doc-updater`, `diagram-generator`, `query-performance-tuner`, `telemetry-tracing`, `ux-copy-ptbr` e o `.agents/` (MCP próprios): acopladas ao example. Estão em `profiles/`, não em `template/`.
 
 Licença Apache-2.0; ver `template/.claude/NOTICE.md` para skills derivadas.
 
