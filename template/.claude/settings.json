@@ -3,5 +3,16 @@
   "attribution": {
     "commit": "",
     "pr": ""
+  },
+  "extraKnownMarketplaces": {
+    "claude-plugins-official": {
+      "source": {
+        "source": "github",
+        "repo": "anthropics/claude-plugins-official"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "code-review@claude-plugins-official": true
   }
 }

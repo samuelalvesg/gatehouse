@@ -37,4 +37,4 @@ done
 
 echo
 echo "Placeholders left to fill:"
-grep -rn '<[^>]*>' "$target/AGENTS.md" "$target/CLAUDE.md" "$target/.agents/agents/developer.md" 2>/dev/null | grep -E '<(uma|pasta|tarefa|link|idioma|build|nome|Co-Author|Linguagem|Regras|Comandos)' | cut -c1-120 || true
+grep -rn '<[^>]*>' "$target/AGENTS.md" "$target/CLAUDE.md" "$target/.agents/agents/developer.md" "$target/.agents/skills/verify-delivery/SKILL.md" 2>/dev/null | grep -E '<(uma|pasta|tarefa|link|idioma|build|nome|Co-Author|Linguagem|Regras|Comandos)' | cut -c1-120 || true
