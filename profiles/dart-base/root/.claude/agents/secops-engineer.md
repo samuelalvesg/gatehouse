@@ -15,10 +15,11 @@ model: opus
 
 # Workflow
 1. Apply skill `owasp-sanitizer` across routes, middleware, queries, and authentication guards.
-2. Check lockfiles and dependencies for known vulnerabilities and CVEs (`dotnet list package --vulnerable`, `npm audit`, `cargo audit`).
-3. Scan codebase for hardcoded credentials, API tokens, and improper log masking.
-4. Verify tenant isolation in multi-tenant contexts.
-5. Provide structured findings report to `@reviewer` or `@developer`.
+2. Before any test that sends traffic to a running system, apply skill `authorized-testing`: check the scope file with `scripts/security/scope_check.py`, use dummy fixtures, and do not report a finding without its verification step.
+3. Check lockfiles and dependencies for known vulnerabilities and CVEs (`dotnet list package --vulnerable`, `npm audit`, `cargo audit`).
+4. Scan codebase for hardcoded credentials, API tokens, and improper log masking.
+5. Verify tenant isolation in multi-tenant contexts.
+6. Provide structured findings report to `@reviewer` or `@developer`.
 
 # Boundaries & Limits
 - CAN: inspect code, scan dependencies, run security linters.
