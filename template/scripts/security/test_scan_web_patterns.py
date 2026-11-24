@@ -46,10 +46,10 @@ class ScanTest(unittest.TestCase):
         self.assertEqual(status(rows, "A1"), "FAIL")
         self.assertEqual(status(rows, "H3"), "FAIL")
 
-    def test_webhook_needs_a_signature_check(self):
-        self.put("api/webhook/route.ts", "export async function POST(req) { return ok(); }\n")
-        self.assertEqual(status(scan.scan(self.root), "E3"), "FAIL")
-        self.put("api/webhook/route.ts", "export async function POST(req) { verify(req); }\n")
+    def test_webhook_without_signature_check_is_flagged_for_review(self):
+        self.put("api/webhook/route.ts", "app.post('/webhook', (req) => ok());\n")
+        self.assertEqual(status(scan.scan(self.root), "E3"), "NOT VERIFIED")
+        self.put("api/webhook/route.ts", "app.post('/webhook', (req) => { verify(req); });\n")
         self.assertEqual(status(scan.scan(self.root), "E3"), "PASS")
 
     def test_unsafe_html_passes_when_sanitized(self):
@@ -85,6 +85,48 @@ class ScanTest(unittest.TestCase):
         self.assertEqual(status(scan.scan(self.root), "G8"), "FAIL")
         self.put("net/ip.cs", "opts.KnownProxies.Clear();\n")
         self.assertEqual(status(scan.scan(self.root), "G8"), "FAIL")
+
+    def test_worktree_and_scratch_copies_are_not_scanned(self):
+        self.put(".claude/worktrees/x/auth/login.ts", "fetch(req.query.url)\n")
+        self.put("scratch/tmp.cs", "var h = new Argon2id(b).GetBytes(32);\n")
+        self.put("src/app.ts", "export const ok = true;\n")
+        rows = scan.scan(self.root)
+        self.assertEqual(status(rows, "G4"), "PASS")
+        self.assertEqual(status(rows, "I1"), "PASS")
+
+    def test_comment_mentioning_an_attack_is_not_code(self):
+        self.put("net/ip.cs", "// reads CF-Connecting-IP only from trusted edges\n")
+        self.assertEqual(status(scan.scan(self.root), "G8"), "PASS")
+
+    def test_test_files_are_not_scanned(self):
+        self.put("tests/ip.test.ts", "const ip = req.headers['CF-Connecting-IP'];\n")
+        self.put("src/app.ts", "export const ok = true;\n")
+        self.assertEqual(status(scan.scan(self.root), "G8"), "PASS")
+
+    def test_validator_is_not_a_login_route(self):
+        self.put("validators/LoginRequestValidator.cs", "RuleFor(x => x.Password).MinimumLength(6);\n")
+        self.assertEqual(status(scan.scan(self.root), "G1"), "PASS")
+
+    def test_hashing_registration_is_not_a_hash_call(self):
+        self.put("di/Services.cs", "services.AddScoped<IPasswordHasher, Argon2PasswordHasher>();\n")
+        self.assertEqual(status(scan.scan(self.root), "G4"), "PASS")
+
+    def test_webhook_check_is_review_only(self):
+        self.put("api/WebhookController.cs", '[HttpPost("webhook")]\npublic Task Receive() { }\n')
+        self.assertEqual(status(scan.scan(self.root), "E3"), "NOT VERIFIED")
+
+    def test_non_login_auth_controller_is_not_flagged(self):
+        self.put("controllers/ApiTokensController.cs", '[HttpPost("tokens")]\npublic Task Create() { }\n')
+        self.assertEqual(status(scan.scan(self.root), "G1"), "PASS")
+
+    def test_client_ip_read_after_a_trust_check_is_not_flagged(self):
+        self.put("net/ip.cs", "if (IsFromTrustedEdge(ctx)) return ctx.Request.Headers[\"CF-Connecting-IP\"];\n")
+        self.assertEqual(status(scan.scan(self.root), "G8"), "PASS")
+
+    def test_cap_in_the_hasher_covers_call_sites(self):
+        self.put("auth/Argon2PasswordHasher.cs", "var gate = new SemaphoreSlim(4);\nvar h = new Argon2id(b).GetBytes(32);\n")
+        self.put("auth/AuthService.cs", "_passwordHasher.VerifyPassword(p, h);\n")
+        self.assertEqual(status(scan.scan(self.root), "G4"), "PASS")
 
     def test_cookie_without_httponly_fails(self):
         self.put("auth/session.ts", "res.cookie('s', token, { secure: true });\n")
