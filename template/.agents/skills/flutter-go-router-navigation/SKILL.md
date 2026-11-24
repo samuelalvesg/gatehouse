@@ -1,6 +1,6 @@
 ---
 name: flutter-go-router-navigation
-description: Implement typed routes, redirection, and guards using go_router in Flutter. Use when changing go_router navigation; defer widget tests that merely assert redirect behavior and defer slide/transition animation work.
+description: Implement typed routes, redirection, and guards using go_router in Flutter. Use when changing go_router navigation; widget tests that only assert redirects and transition animations are out of scope here.
 metadata:
   triggers:
     files:

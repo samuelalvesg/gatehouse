@@ -1,6 +1,6 @@
 ---
 name: flutter-notifications
-description: Integrate push and local notifications using FCM and flutter_local_notifications in Flutter. Use for notification delivery or presentation; defer badge-only UI and notification-service tests.
+description: Integrate push and local notifications using FCM and flutter_local_notifications in Flutter. Use for notification delivery or presentation; badge-only UI and notification-service tests are out of scope here.
 metadata:
   triggers:
     files:

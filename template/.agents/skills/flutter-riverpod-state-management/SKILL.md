@@ -57,6 +57,5 @@ Use `ConsumerWidget` with `ref.watch()` and `AsyncValue.when()` for reactive UI.
 
 ## Related Topics
 
-- [flutter-layer-based-clean-architecture](../flutter-layer-based-clean-architecture/SKILL.md)
-- [flutter-dependency-injection](../flutter-dependency-injection/SKILL.md)
-- [flutter-testing](../flutter-testing/SKILL.md)
+- Layering: `.agents/rules/frontend-clean-code-rule.md` and `frontend-app/docs/FRONTEND_COMMENT_STANDARD.md`.
+- Tests: `test-strategy` (Flutter section) and the `mocktail` rules there.
