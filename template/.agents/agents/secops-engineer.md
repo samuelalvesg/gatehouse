@@ -15,6 +15,7 @@ model: opus
 
 # Workflow
 1. Apply skill `owasp-sanitizer` across routes, middleware, queries, and authentication guards.
+2. For a web app, run `python3 scripts/security/scan_web_patterns.py`, then apply skill `web-app-security-audit` (table with PASS/FAIL/N/A/NOT VERIFIED). Report every NOT VERIFIED item; do not drop it.
 2. Check lockfiles and dependencies for known vulnerabilities and CVEs (`dotnet list package --vulnerable`, `npm audit`, `cargo audit`).
 3. Scan codebase for hardcoded credentials, API tokens, and improper log masking.
 4. Verify tenant isolation in multi-tenant contexts.
