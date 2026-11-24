@@ -19,7 +19,7 @@ import sys
 from pathlib import Path
 
 SKIP = {".git", "node_modules", "build", ".next", "dist", "target", ".dart_tool", "vendor"}
-SOURCE = {".ts", ".tsx", ".js", ".jsx", ".mjs", ".py", ".go", ".dart", ".sql", ".php", ".rb"}
+SOURCE = {".ts", ".tsx", ".js", ".jsx", ".mjs", ".py", ".go", ".dart", ".sql", ".php", ".rb", ".cs", ".java", ".kt"}
 RE_PUBLIC_SECRET = re.compile(r"(NEXT_PUBLIC_|VITE_|REACT_APP_)\w*(SECRET|PRIVATE|SERVICE_ROLE|PASSWORD|TOKEN)")
 RE_SERVICE_KEY = re.compile(r"service[_-]?role", re.I)
 RE_UNSAFE_HTML = re.compile(r"dangerouslySetInnerHTML|innerHTML|v-html")
