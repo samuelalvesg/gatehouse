@@ -35,7 +35,7 @@ Specialized agent definitions in markdown with standard frontmatter:
 ### `skills/`
 
 Shared capabilities for AI agents (each containing its own `SKILL.md`):
-- **Core Engineering & Quality**: `adr-writer`, `bdd-spec-writer`, `code-smell-eliminator`, `evidence-report`, `graph-mapping`, `incident-postmortem`, `openspec-validation`, `owasp-sanitizer`, `release-checklist`, `root-cause-debug`, `tech-debt-triage`, `test-mutation-audit`, `test-strategy`, `token-optimization`, `tool-contract-design`, `ui-handoff-spec`.
+- **Core Engineering & Quality**: `adr-writer`, `bdd-spec-writer`, `code-smell-eliminator`, `evidence-report`, `graph-mapping`, `incident-postmortem`, `openspec-validation`, `owasp-sanitizer`, `release-checklist`, `root-cause-debug`, `tech-debt-triage`, `test-mutation-audit`, `test-strategy`, `token-optimization`, `tool-contract-design`, `ui-handoff-spec`, `verify-delivery` (delivery gate; fill in the stack commands).
 - **Ecosystem Discovery & Documents**: `find-skills`, `docling`.
 - **Text & Copywriting**: `humanizer`, `ux-copy-ptbr`.
 
