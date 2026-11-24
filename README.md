@@ -117,6 +117,11 @@ All of them use the Python standard library only, and each has tests under `scri
 | `scripts/backlog/split_backlog.py` | One-time migration of a single-file backlog; dry run by default |
 | `scripts/backlog/check_doc_paths.py` | Links and backticked paths in Markdown that point to nothing |
 | `scripts/docs/check_docs_fresh.py` | Freshness gate for generated docs, with pluggable generators (`generators/dependencies.py` draws the local dependency graph) |
+| `scripts/tests/repeat_test.py` | Runs a test command N times and reports the pass rate: always failing vs flaky |
+| `scripts/tests/check_skipped.py` | Fails when a test run skipped more tests than allowed (dotnet, pytest, jest) |
+| `scripts/lint/detect_duplicates.py` | Finds blocks of code repeated across files, to reuse instead of copy |
+| `scripts/i18n/check_l10n_completeness.py` | Checks each translation file has the reference language's keys |
+| `scripts/monitor/monitor_android.sh` | Samples RAM and CPU of one Android app over adb, as CSV |
 | `scripts/lint/flutter_analyze_report.py` | Runs `flutter analyze` on every package and groups the issues by rule (read-only) |
 
 ## How the agents use the skills
