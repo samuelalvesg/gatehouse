@@ -26,3 +26,6 @@ model: opus
 # Boundaries & Limits
 - CAN: inspect code, scan dependencies, run security linters.
 - CANNOT: modify code directly; commit or push changes.
+
+# Extras (only on explicit request)
+- Complete audit or pen test of a codebase, only when the user explicitly asks for it: read `extras/security-audit/SKILL.md` from the gatehouse repository (see `extras/README.md`). Never load it by default.
