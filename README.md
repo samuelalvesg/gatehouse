@@ -48,13 +48,13 @@ Then:
 ## Good to know
 
 - `AGENTS.md`, `CLAUDE.md`, the `projects/` texts and parts of `docs/` are in Brazilian Portuguese; the agent files are in English. Translate what you need.
-- Left out on purpose because they are tied to the original project: stack-specific developers, local-model (Ollama) profiles and a few skills such as `local-llama-bridge` and `telemetry-tracing`.
 - Several skills derive from Apache-2.0 plugins; see `template/.claude/NOTICE.md`.
-## Plugins declarados no repo
 
-Plugin instalado só na conta do claude.ai vale para quem tem a conta. Para que
-qualquer sessão que abra o repo receba o plugin, declare em
-`.claude/settings.json` (o template já traz `code-review`):
+## Plugins declared in the repo
+
+A plugin installed only on a claude.ai account works only for people with that
+account. To make every session that opens the repo get the plugin, declare it
+in `.claude/settings.json` (the template already ships `code-review`):
 
 ```json
 "extraKnownMarketplaces": {
@@ -69,28 +69,34 @@ qualquer sessão que abra o repo receba o plugin, declare em
 }
 ```
 
-Escolha por stack: .NET → `csharp-lsp` (precisa de `csharp-ls`); Rust →
-`rust-analyzer-lsp` (precisa de `rust-analyzer`); Flutter → `dart-flutter`.
-O setup de `environments/` instala os dois servidores. Plugin sem
-`marketplace.json` público (por exemplo `backend-design`) não dá para declarar:
-fica na conta, e os agentes o citam como "usar se carregado". Copiar skill de
-plugin para o repo só quando for adaptar, com a origem no `NOTICE.md`.
-`tests/validate.sh` reprova plugin cujo marketplace não está declarado.
+Pick by stack: .NET → `csharp-lsp` (needs `csharp-ls`); Rust →
+`rust-analyzer-lsp` (needs `rust-analyzer`); Flutter → `dart-flutter`.
+The `environments/` setup installs both servers. A plugin with no public
+`marketplace.json` (for example `backend-design`) can't be declared. It stays
+on the account, and the agents mention it as "use if loaded". Copy a plugin's
+skill into the repo only when you are going to adapt it, and record the origin
+in `NOTICE.md`. `tests/validate.sh` fails any plugin whose marketplace isn't
+declared.
 
-A skill `verify-delivery` é o gate de entrega do repo: preencher os comandos
-(os mesmos do CI). `@developer`, `@qa-engineer` e `@reviewer` a citam.
+The `verify-delivery` skill is the repo's delivery gate: fill in its commands
+(the same ones as CI). `@developer`, `@qa-engineer` and `@reviewer` refer to it.
 
-## Perfis dos repositórios example
+## example repository profiles
 
-`profiles/` guarda a configuração exata dos repos example, example-backend,
-example-frontend e example-edge (agentes com SOUL, skills, regras, MCP, plugins):
-este repo é a fonte e os repos recebem a cópia com
-`./install.sh <repo> --profile <nome> --force`; `--check` confere se a cópia do
-repo continua igual. Detalhes em [`profiles/README.md`](profiles/README.md).
+`profiles/` holds the exact configuration of the example, example-backend,
+example-frontend and example-edge repos (agents with SOUL, skills, rules, MCP,
+plugins). This repo is the source, and the other repos get a copy with
+`./install.sh <repo> --profile <name> --force`. `--check` tells you whether a
+repo's copy still matches. Details in [`profiles/README.md`](profiles/README.md).
 
-## Fora do template (de propósito)
+## Left out of the template on purpose
 
-`rust-dev` e `backend-dev`/`frontend-dev` específicos (viram cópias do `developer`), perfis de modelo local (Ollama), skills `local-llama-bridge`, `auto-doc-updater`, `diagram-generator`, `query-performance-tuner`, `telemetry-tracing`, `ux-copy-ptbr` e o `.agents/` (MCP próprios): acopladas ao example. Estão em `profiles/`, não em `template/`.
+These are tied to example: `rust-dev`, the stack-specific `backend-dev` and
+`frontend-dev` (in the template they are copies of `developer`), local-model
+(Ollama) profiles, the skills `local-llama-bridge`, `auto-doc-updater`,
+`diagram-generator`, `query-performance-tuner`, `telemetry-tracing` and
+`ux-copy-ptbr`, and `.agents/` (its own MCP setup). They live in `profiles/`,
+not in `template/`.
 
 ## License
 
