@@ -27,5 +27,8 @@ One item is one file under `docs/backlog/<epic>/<slug>.md`. Its metadata line ho
 1. Create an item: `python3 scripts/backlog/new_item.py --epic core --title "Short title"`.
 2. Change its status: `python3 scripts/backlog/set_status.py <slug> --status "🟡 Partial"`. The script refuses `✅ Done` while checkboxes are open.
 3. Check the result: `python3 scripts/backlog/check_backlog.py`. Exit 0 means clean.
+4. Refresh the done view: `python3 scripts/backlog/report_done.py` writes `docs/DONE.md`.
+
+Migrating an old single-file backlog: `split_backlog.py --source <old.md> --epic <name>` is a dry run that reports any line it would lose. Add `--write` only when the dry run reports none.
 
 If the scripts cannot run, edit both places by hand and say so as "not verified by script".

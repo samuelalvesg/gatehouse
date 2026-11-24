@@ -11,6 +11,7 @@ Run this gate before you finish any change to `docs/BACKLOG.md` or `docs/backlog
 
 ```bash
 python3 scripts/backlog/check_backlog.py --verbose
+python3 scripts/backlog/check_doc_paths.py
 python3 -m unittest discover -s scripts/backlog
 ```
 
@@ -26,6 +27,7 @@ python3 -m unittest discover -s scripts/backlog
 | C6 | the status in the index equals the status in the file |
 | C7 | no done item is listed in the index |
 | C8 | no done item has an open checkbox |
+| docs | every Markdown link and backticked repo path resolves (`check_doc_paths.py`) |
 
 ## Reporting
 

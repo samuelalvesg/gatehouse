@@ -11,6 +11,9 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import check_backlog  # noqa: E402
+import check_doc_paths  # noqa: E402
+import report_done  # noqa: E402
+import split_backlog  # noqa: E402
 import new_item  # noqa: E402
 import set_status  # noqa: E402
 import triage_backlog  # noqa: E402
@@ -115,6 +118,50 @@ class BacklogTest(unittest.TestCase):
             ["--root", str(self.root), "--epic", "core", "--title", "X", "--status", "Maybe"],
         )
         self.assertEqual(code, 2)
+
+    def test_report_done_lists_only_done_items(self):
+        (self.root / "docs" / "backlog" / "ui" / "dark-theme.md").write_text(
+            ITEM_2.replace("🟡 Partial", "✅ Done").replace("- [ ] contrast check", "- [x] contrast check"),
+            encoding="utf-8",
+        )
+        self.assertEqual(self.quiet(report_done.main, ["--root", str(self.root)]), 0)
+        report = self.read("docs/DONE.md")
+        self.assertIn("# Done (1)", report)
+        self.assertIn("Dark theme", report)
+        self.assertNotIn("Add export", report)
+
+    def test_split_dry_run_writes_nothing(self):
+        source = self.root / "old.md"
+        source.write_text("Intro line\n\n## First\n\n- [ ] a\n\n## Second\n\nSome text\n", encoding="utf-8")
+        (self.root / "docs" / "BACKLOG.md").unlink()
+        code = self.quiet(split_backlog.main, ["--root", str(self.root), "--source", str(source), "--epic", "misc"])
+        self.assertEqual(code, 0)
+        self.assertFalse((self.root / "docs" / "BACKLOG.md").exists())
+
+    def test_split_write_keeps_every_line(self):
+        source = self.root / "old.md"
+        source.write_text("Intro line\n\n## First\n\n- [ ] a\n\n## Second\n\nSome text\n", encoding="utf-8")
+        (self.root / "docs" / "BACKLOG.md").unlink()
+        shutil.rmtree(self.root / "docs" / "backlog")
+        code = self.quiet(
+            split_backlog.main,
+            ["--root", str(self.root), "--source", str(source), "--epic", "misc", "--write"],
+        )
+        self.assertEqual(code, 0)
+        self.assertIn("Intro line", self.read("docs/BACKLOG.md"))
+        self.assertIn("- [ ] a", self.read("docs/backlog/misc/first.md"))
+        self.assertIn("Some text", self.read("docs/backlog/misc/second.md"))
+        self.assertEqual(check_backlog.run(self.root), [])
+
+    def test_doc_paths_reports_broken_links_and_ticks(self):
+        (self.root / "docs" / "guide.md").write_text(
+            "[ok](backlog/ui/dark-theme.md) [bad](missing.md) `docs/nope.md` `docs/BACKLOG.md`\n",
+            encoding="utf-8",
+        )
+        problems = [p for md in check_doc_paths.markdown_files(self.root) for p in check_doc_paths.broken_in(self.root, md)]
+        self.assertIn("link -> missing.md", problems)
+        self.assertIn("path `docs/nope.md`", problems)
+        self.assertNotIn("link -> backlog/ui/dark-theme.md", problems)
 
     def test_triage_flags_are_factual(self):
         rows = {r[0]: r for r in triage_backlog.rows(self.root)}

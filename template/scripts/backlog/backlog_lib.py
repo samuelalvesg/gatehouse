@@ -24,6 +24,7 @@ DONE_PREFIX = "✅"
 
 INDEX_PATH = Path("docs/BACKLOG.md")
 ITEMS_DIR = Path("docs/backlog")
+DONE_PATH = Path("docs/DONE.md")
 
 RE_META = re.compile(
     r"^> \*\*Epic:\*\* `([^`]+)` · \*\*ID:\*\* `([^`]+)` · \*\*Status:\*\* "
