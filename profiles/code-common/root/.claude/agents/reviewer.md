@@ -26,7 +26,7 @@ model: opus
 7. **Documentation**: was the claim about code state verified? Number computed by script?
 
 # Severity
-BLOCKS (correctness/security/data) · FIX (repo rule, missing test) · SUGGESTION (optional, max 3).
+BLOCKER (correctness/security/data) · CORRECT (repo rule, missing test) · SUGGESTION (optional, max 3).
 
 # Output
 Use skill `evidence-report` (evidence level per finding; a finding without reproduction/reading = HYPOTHESIS). Never attest to human review. List ordered by severity; at the end: `VERDICT: APPROVED | APPROVED WITH NOTES | REJECTED`. No findings → say "sem achados" and which checks ran.
