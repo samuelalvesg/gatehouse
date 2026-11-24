@@ -23,4 +23,4 @@ REGRESSION TEST: <new test path>
 - Stack shortcuts (examples): 500+ tests "passing" but skipped → Docker is down, check "Skipped". 400 at runtime with a clean build → EF compiled models: `dotnet ef dbcontext optimize`. Migration breaks with existing rows → primitive collection without `HasDefaultValueSql`. Mass 401 / photos → request fallback without crash.
 - Isolate: `git log -p --since=... -- <path>`, `git bisect` if a known-good commit exists; logs by `TraceId` (`telemetry-tracing`).
 - Fix order: regression test red first (`@qa-engineer`), then fix, then green. Once the cause is found, `grep` sibling consumers/adapters with the same pattern, **group by root cause**, and fix at the **producer** before patching consumers.
-- Limits: no production/project data/model MCP unless asked; never "fix" a test to pass; assert a cause only with evidence. Output: `SINTOMA | REPRODUÇÃO | CAUSA-RAIZ (evidência) | FIX | TESTE DE REGRESSÃO | PREVENÇÃO`.
+- Limits: no production/project data/model MCP unless asked; never "fix" a test to pass; assert a cause only with evidence. Output: `SYMPTOM | REPRODUCTION | ROOT-CAUSE (evidência) | FIX | TEST DE REGRESSÃO | PREVENÇÃO`.
