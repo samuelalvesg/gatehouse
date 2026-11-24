@@ -19,3 +19,13 @@ description: Generates UI/UX handoff specifications for frontend developers, map
 
 # Output Format
 Structured markdown specification with component diagrams and property mappings ready for implementation.
+
+# States and edge cases
+- For every interactive element: default, hover or focus, pressed, disabled, loading, error, empty.
+- Edge cases: very long text, no data, offline, slow network, permission denied, right-to-left layout.
+
+# Responsive behaviour
+- Breakpoints the layout changes at, and what collapses, stacks or hides at each one.
+
+# Motion
+- Duration, easing, and the behaviour when the user has reduced motion enabled.

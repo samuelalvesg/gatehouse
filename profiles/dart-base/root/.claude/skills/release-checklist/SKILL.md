@@ -20,3 +20,7 @@ description: Verifies pre-release and deployment readiness, ensuring CI test pas
 
 # Output Format
 `# | Item | Status (PASS / BLOCKED) | Verification Command / Evidence`
+
+# Rollback triggers
+- Conditions that start a rollback without debate: error rate or latency above the agreed threshold, a failed health check, data integrity errors, a security finding.
+- The rollback path for each change: previous artifact, feature flag to turn off, and whether a migration needs a reverse step or only a forward fix.

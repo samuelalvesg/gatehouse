@@ -18,3 +18,12 @@ description: Generates blameless post-mortem analysis from incidents, regression
 
 # Output
 Standard markdown document saved under `docs/incidents/YYYY-MM-DD-incident-title.md`.
+
+# Communication
+- During the incident: one status update per interval, with current status, actions taken, next steps. Facts only; name the owner of each next step.
+- After: share the postmortem with everyone affected, and keep the timeline in UTC.
+
+# Review
+- What went well: detection, response and tools that worked, so they are kept.
+- What went poorly: detection gaps, slow handoffs, missing runbook steps.
+- Lessons learned: one sentence per lesson, each tied to an action item.
