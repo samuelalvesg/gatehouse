@@ -38,5 +38,12 @@
   "CORRIGIR": "FIX",
   "SUGESTÃO": "SUGGESTION",
   "não verificado": "not verified",
-  "Execução": "Execution"
+  "Execução": "Execution",
+  "CENÁRIO": "SCENARIO",
+  "CAMADA": "LAYER",
+  "RISCO": "RISK",
+  "SINTOMA": "SYMPTOM",
+  "REPRODUÇÃO": "REPRODUCTION",
+  "CAUSA": "CAUSE",
+  "TESTE": "TEST"
 }
