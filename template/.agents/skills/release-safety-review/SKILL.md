@@ -18,7 +18,7 @@ A change is safe when it can be reverted without data loss and deployed without 
 - **R7 Health checks.** Liveness and readiness are separate. Readiness fails while the service cannot serve, so traffic is not sent to it during start-up or shutdown.
 - **R8 Shutdown.** In-flight requests and queue messages finish or return to the queue on shutdown.
 - **R9 Backups.** Backups run, are encrypted, and have been restored at least once. Without evidence this is `NOT VERIFIED`, and the release says so.
-- **R10 Disaster recovery.** The recovery time and recovery point objectives are written down for the data that matters, with the steps to meet them.
+- **R10 Disaster recovery.** The recovery time and recovery point objectives are written down for the data that matters, with the steps to meet them. `NOT VERIFIED` when no objectives are written down.
 - **R11 Configuration.** Environment-specific values are not hard-coded. A missing value fails at start-up, not at the first request.
 - **R12 Observability.** The release names the new metrics or logs that will show whether it worked, and who watches them.
 

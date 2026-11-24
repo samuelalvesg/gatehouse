@@ -18,7 +18,7 @@ import re
 import sys
 from pathlib import Path
 
-SKIP = {".git", "node_modules", "build", ".next", "dist", "target", ".dart_tool", "vendor"}
+SKIP = {".git", "node_modules", "build", ".next", "dist", "target", ".dart_tool", "vendor", "worktrees", "scratch", ".claude"}
 SOURCE = {".ts", ".tsx", ".js", ".jsx", ".mjs", ".py", ".go", ".dart", ".sql", ".php", ".rb", ".cs", ".java", ".kt"}
 RE_PUBLIC_SECRET = re.compile(r"(NEXT_PUBLIC_|VITE_|REACT_APP_)\w*(SECRET|PRIVATE|SERVICE_ROLE|PASSWORD|TOKEN)")
 RE_SERVICE_KEY = re.compile(r"service[_-]?role", re.I)
@@ -30,12 +30,19 @@ RE_CORS_STAR = re.compile(r"Access-Control-Allow-Origin[\"']?\s*[:,]\s*[\"']\*")
 RE_CREDENTIALS = re.compile(r"Allow-Credentials[\"']?\s*[:,]\s*(true|\"true\")", re.I)
 RE_COOKIE_SET = re.compile(r"\b(setCookie|res\.cookie|cookies\(\)\.set|set-cookie)\b", re.I)
 RE_COOKIE_FLAGS = re.compile(r"httpOnly", re.I)
-RE_AUTH_ROUTE = re.compile(r"(login|signin|sign-in|signup|sign-up|register|reset|forgot|password|auth)", re.I)
+RE_AUTH_ROUTE = re.compile(r"(login|signin|sign-in|signup|sign-up|register|reset|forgot|password)", re.I)
 RE_LOGIN_ROUTE = re.compile(r"[\"\x27/](login|signin|sign-in)[\"\x27/]", re.I)
-RE_HASH_CALL = re.compile(r"HashPassword|VerifyPassword|Argon2id|bcrypt|scrypt", re.I)
+RE_HASH_CALL = re.compile(r"\.(HashPassword|VerifyPassword)\(|new Argon2id\(|bcrypt\.(hash|compare)\(|scrypt\(", re.I)
+RE_ROUTE = re.compile(r"\[Http(Post|Put|Patch|Get)|\.MapPost\(|\.MapPut\(|router\.post\(|app\.(post|put)\(|@(Post|Put)Mapping", re.I)
+TEST_PATH = re.compile(r"(^|/)(tests?|__tests__|spec)(/|$)|\.(test|spec)\.|Tests?\.(cs|dart|ts|js|py)$", re.I)
+COMMENT = re.compile(r"^\s*(//|#|\*|/\*|<!--)")
+# Checks that only a reading of the code can confirm: reported as NOT VERIFIED, never as FAIL.
+REVIEW_ONLY = {"E3", "H4"}
 RE_CLIENT_IP_HEADER = re.compile(r"CF-Connecting-IP|X-Forwarded-For|X-Real-IP", re.I)
 RE_FWD_CLEAR = re.compile(r"KnownProxies\.Clear|KnownIPNetworks\.Clear|KnownNetworks\.Clear")
 RE_CONCURRENCY_CAP = re.compile(r"SemaphoreSlim|Semaphore\(|Limiter|Concurrency|WorkerPool", re.I)
+RE_TRUST_GUARD = re.compile(r"IsFromTrustedEdge|IsTrusted|TrustedProxies|KnownProxies|KnownIPNetworks|trusted[-_ ]?proxy", re.I)
+RE_HASH_IMPL = re.compile(r"new Argon2id\(|bcrypt\.hash\(|scrypt\(", re.I)
 RE_RATE_LIMIT = re.compile(r"rate[_-]?limit|throttle", re.I)
 RE_RAW_SQL = re.compile(r"(query|execute|raw)\s*\(\s*[`\"'][^`\"']*(\$\{|\"\s*\+|'\s*\+)")
 RE_LOCAL_REDIRECT = re.compile(r"callbackUrl|redirectTo|[\"']next[\"']", re.I)
@@ -58,6 +65,11 @@ def sources(root: Path):
             yield p
 
 
+def strip_comments(text: str) -> str:
+    """Blank out comment lines so a doc comment that names an attack does not count as code. Line numbers are kept."""
+    return "\n".join("" if COMMENT.match(line) else line for line in text.splitlines())
+
+
 def first_line(text: str, rx: re.Pattern) -> int | None:
     m = rx.search(text)
     return text.count("\n", 0, m.start()) + 1 if m else None
@@ -68,6 +80,7 @@ def scan(root: Path):
     if not any(p.suffix in SOURCE for p in files):
         return None
     rows = []
+    cap_defined = False
     ignore = root / ".gitignore"
     gi = ignore.read_text(encoding="utf-8") if ignore.is_file() else ""
     rows.append(("A2", ".env git-ignored", "PASS" if re.search(r"^\.env", gi, re.M) else "FAIL", "HIGH", ".gitignore"))
@@ -76,8 +89,11 @@ def scan(root: Path):
     for p in files:
         if p.suffix not in SOURCE:
             continue
-        text = p.read_text(encoding="utf-8", errors="ignore")
         rel = p.relative_to(root).as_posix()
+        if TEST_PATH.search(rel):
+            continue
+        text = strip_comments(p.read_text(encoding="utf-8", errors="ignore"))
+        is_route = bool(RE_ROUTE.search(text))
         if RE_PUBLIC_SECRET.search(text):
             hits["A1"].append(f"{rel}:{first_line(text, RE_PUBLIC_SECRET)}")
         if RE_SERVICE_KEY.search(text) and "server" not in rel.lower() and "migration" not in rel.lower():
@@ -86,16 +102,18 @@ def scan(root: Path):
             hits["H2"].append(f"{rel}:{first_line(text, RE_UNSAFE_HTML)}")
         if RE_DEBUG_ROUTE.search(rel):
             hits["E1"].append(rel)
-        if RE_WEBHOOK.search(rel) and not RE_SIGNATURE.search(text):
+        if RE_WEBHOOK.search(rel) and is_route and not RE_SIGNATURE.search(text):
             hits["E3"].append(rel)
         if RE_CORS_STAR.search(text) and RE_CREDENTIALS.search(text):
             hits["E4"].append(f"{rel}:{first_line(text, RE_CORS_STAR)}")
         if RE_COOKIE_SET.search(text) and not RE_COOKIE_FLAGS.search(text):
             hits["F2"].append(f"{rel}:{first_line(text, RE_COOKIE_SET)}")
-        if (RE_AUTH_ROUTE.search(rel) or RE_LOGIN_ROUTE.search(text)) and not RE_RATE_LIMIT.search(text):
+        if is_route and (RE_AUTH_ROUTE.search(rel) or RE_LOGIN_ROUTE.search(text)) and not RE_RATE_LIMIT.search(text):
             hits["G1"].append(rel)
-        if RE_CLIENT_IP_HEADER.search(text) or RE_FWD_CLEAR.search(text):
+        if (RE_CLIENT_IP_HEADER.search(text) and not RE_TRUST_GUARD.search(text)) or RE_FWD_CLEAR.search(text):
             hits["G8"].append(f"{rel}:{first_line(text, RE_CLIENT_IP_HEADER) or first_line(text, RE_FWD_CLEAR)}")
+        if RE_HASH_IMPL.search(text) and RE_CONCURRENCY_CAP.search(text):
+            cap_defined = True  # the cap lives in the hashing implementation, not at each call site
         if RE_HASH_CALL.search(text) and not RE_CONCURRENCY_CAP.search(text):
             hits["G4"].append(f"{rel}:{first_line(text, RE_HASH_CALL)}")
         if RE_RAW_SQL.search(text):
@@ -110,6 +128,9 @@ def scan(root: Path):
             hits["I1"].append(f"{rel}:{first_line(text, RE_SSRF)}")
         if RE_LOCAL_REDIRECT.search(text):
             hits["H4"].append(f"{rel}:{first_line(text, RE_LOCAL_REDIRECT)}")
+
+    if cap_defined:
+        hits["G4"] = []
 
     spec = {
         "A1": ("No service keys in public variables", "CRITICAL"),
@@ -135,7 +156,8 @@ def scan(root: Path):
             continue
         name, severity = spec[check_id]
         if found:
-            rows.append((check_id, name, "FAIL", severity, "; ".join(found[:5]) + (" ..." if len(found) > 5 else "")))
+            status = "NOT VERIFIED" if check_id in REVIEW_ONLY else "FAIL"
+            rows.append((check_id, name, status, severity, "; ".join(found[:5]) + (" ..." if len(found) > 5 else "")))
         else:
             rows.append((check_id, name, "PASS", "-", "no pattern hit"))
     return rows

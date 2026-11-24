@@ -20,7 +20,7 @@ Read the files that define how the software is built, shipped and run. A mistake
 - **I9 Pipeline permissions.** The pipeline token has the minimum permissions. Pull-request workflows from forks do not receive secrets.
 - **I10 Infrastructure as code.** Public storage, open security groups (`0.0.0.0/0` on administrative ports), unencrypted volumes and disabled logging are flagged. Each exception is named in the file.
 - **I11 Environment files.** Real values are not committed. Development and production values are separate, and the `.env` pattern is ignored by git.
-- **I12 Drift.** The deployed state comes from the files. A manual change is recorded or reverted.
+- **I12 Drift.** The deployed state comes from the files. A manual change is recorded or reverted. Compare with the live state only when access is given; otherwise `NOT VERIFIED`.
 
 ## Procedure
 
