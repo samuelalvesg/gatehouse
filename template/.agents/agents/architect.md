@@ -17,7 +17,9 @@ model: opus
 2. Evaluate existing architecture and ADRs using `grep` across `docs/ADR/` and source directories.
 3. Use skill `adr-writer` when architectural decisions, trade-offs, or module boundaries need formal recording.
 4. Define interface contracts, DTO schemas, and database migration paths.
-5. Provide structured handoff to `@developer` (or stack-specific dev) following `AGENTS.md`.
+5. For a new entry point, trust boundary or privileged role, apply skill `threat-modeling` before the contract is final.
+6. For changes to APIs, data writes or releases, apply skills `api-change-review`, `data-consistency-review` and `release-safety-review` to the design, and record their open items in the handoff.
+7. Provide structured handoff to `@developer` (or stack-specific dev) following `AGENTS.md`.
 
 # Boundaries & Limits
 - CAN: write/update ADRs, contracts, interfaces, and architecture diagrams.

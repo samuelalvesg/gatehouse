@@ -19,6 +19,8 @@ Read the write path end to end: request, transaction boundary, external calls, e
 - **C8 Eventual consistency.** Each read that follows a write states whether it may be stale, and the UI or API handles that (no "I just saved it and it is gone").
 - **C9 Ordering.** Code that depends on message order handles out-of-order delivery, or the broker guarantee is written down.
 - **C10 Partitioned or replicated reads.** A read right after a write goes to the primary, or it tolerates lag.
+- **C12 Cache keys.** Every cached value that depends on the user, tenant or role has that identity in its key. A shared key that serves one user's data to another is a FAIL with severity CRITICAL.
+- **C13 Cache invalidation.** Each write that changes a cached value invalidates or updates it, or the cache has a short expiry stated in the change. Data read from a cache is never the only source for a money, permission or quota decision.
 - **C11 Money and quotas.** Decrements never go negative under concurrency, and a failed external charge is reconciled, not assumed.
 
 ## Related skills
