@@ -29,3 +29,6 @@ Structured markdown specification with component diagrams and property mappings 
 
 # Motion
 - Duration, easing, and the behaviour when the user has reduced motion enabled.
+
+# Content specifications
+- Real text for every label, empty state and error, with its length limits and the translation space it needs.

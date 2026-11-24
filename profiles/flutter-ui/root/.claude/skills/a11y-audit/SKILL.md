@@ -27,3 +27,9 @@ description: Accessibility audit (WCAG 2.1/2.2 AA) for Flutter/Web screens. Use 
 # Testing approach
 - Check contrast with a tool and by eye; walk the screen with the keyboard only; read it with a screen reader once; check zoom at 200%.
 - Report each failure with the criterion number, the element, and the fix.
+
+# Common issues
+- Images without text alternatives; icon buttons without a name; low contrast on text and on focus rings; forms without labels or error text; focus lost after a dialog closes.
+
+# Priority fixes
+- Order findings by who they block: anything that stops a keyboard or screen reader user from finishing a task comes first.

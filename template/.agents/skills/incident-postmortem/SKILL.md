@@ -27,3 +27,7 @@ Standard markdown document saved under `docs/incidents/YYYY-MM-DD-incident-title
 - What went well: detection, response and tools that worked, so they are kept.
 - What went poorly: detection gaps, slow handoffs, missing runbook steps.
 - Lessons learned: one sentence per lesson, each tied to an action item.
+
+# Severity
+- SEV1: service down for everyone. SEV2: a main function degraded. SEV3: a minor function, some users. SEV4: cosmetic.
+- Set the severity from impact, not from how alarming the report sounds; change it as facts arrive.
