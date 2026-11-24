@@ -18,3 +18,8 @@ description: Identifies and eliminates code smells, dead code, excessive complex
 
 # Output
 Summary of smells eliminated, before/after diff summary, and verification test status.
+
+# Additional guidance
+- Size limits: `.agents/rules/frontend-clean-code-rule.md` (Dart) and `.agents/rules/code-syle-rule.md` (C#). Cyclomatic complexity: `dotnet build` with rule CA1502, `dart analyze`/DCM; otherwise count `if/for/while/case/&&/||/catch`; practical target ≤10 per method.
+- Missing coverage → ask `@qa-engineer` for a characterization test. Never translate a file to English in passing. Duplication: `grep -rn "<distinctive snippet>"`; 3rd occurrence = abstract.
+- Output: `SMELL | REFACTORING | lines/CC before→after | tests (total/green)`.
