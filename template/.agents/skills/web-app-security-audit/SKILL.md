@@ -76,6 +76,12 @@ Run `python3 scripts/security/scan_web_patterns.py` first. It finds the mechanic
 - **G1** Login, sign-up and password recovery are rate-limited.
 - **G2** Routes that call paid APIs have rate limits and spend caps per user and globally.
 - **G3** Public forms and unauthenticated endpoints have rate limits or a CAPTCHA.
+- **G4** Password hashing is memory-hard and bounded. Each hash or verify call uses a fixed, reviewed memory cost, and the number of concurrent hashing operations is capped (semaphore, queue or worker pool). Without a cap, N parallel logins allocate N times the memory cost (for example 64 MiB each).
+- **G5** Login, token refresh and password recovery are rate-limited per account and per IP, both by a limiter on the endpoint and, where possible, at the edge. Check the attribute on every login route, including minimal-API handlers. Not verified if the edge configuration is not in the repository.
+- **G6** An unknown user and a wrong password take comparable time: the hash runs (or a dummy hash runs) on the unknown-user path, so response time does not reveal which accounts exist.
+- **G8** The client IP used for rate limits is trusted only when the connection comes from a known proxy or the edge provider's published ranges. Headers such as `CF-Connecting-IP`, `X-Forwarded-For` and `X-Real-IP` are read only after that check. Forwarded-header options do not clear the list of known proxies or networks. Without this, an attacker sends a new IP header on each attempt and bypasses every per-IP limit. Also check that the origin accepts traffic only from the edge, when the edge is part of the design.
+- **G9** Login protection escalates: a global limit as a high ceiling, per-account and per-IP limits with a sliding window, a CAPTCHA or managed challenge after a small number of failures (for example 5), and a growing delay after repeated failures. A temporary account lock is avoided, because it lets an attacker lock out real users. Confirm the edge rule exists in the infrastructure configuration; if it is not in the repository, mark `NOT VERIFIED`.
+- **G7** The password length has a maximum (for example 128 or 256 characters) and the request body has a size limit below the framework default for that route.
 
 ## H. Input and output
 
@@ -98,6 +104,7 @@ Run `python3 scripts/security/scan_web_patterns.py` first. It finds the mechanic
 - **J4** TLS is enforced end to end, and `Strict-Transport-Security` is set on the public host.
 - **J5** Sensitive fields at rest (tokens, personal identifiers) are encrypted, or the choice is documented.
 - **J6** Passwords, tokens and secrets are not written to logs, error messages or analytics.
+- **J7** Hash parameters read from storage (memory, iterations, parallelism) are checked against fixed bounds before use. A stored value outside the bounds is rejected, not trusted.
 
 ## K. OAuth and third-party sign-in
 

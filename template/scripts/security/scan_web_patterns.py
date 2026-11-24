@@ -19,7 +19,7 @@ import sys
 from pathlib import Path
 
 SKIP = {".git", "node_modules", "build", ".next", "dist", "target", ".dart_tool", "vendor"}
-SOURCE = {".ts", ".tsx", ".js", ".jsx", ".mjs", ".py", ".go", ".dart", ".sql", ".php", ".rb"}
+SOURCE = {".ts", ".tsx", ".js", ".jsx", ".mjs", ".py", ".go", ".dart", ".sql", ".php", ".rb", ".cs", ".java", ".kt"}
 RE_PUBLIC_SECRET = re.compile(r"(NEXT_PUBLIC_|VITE_|REACT_APP_)\w*(SECRET|PRIVATE|SERVICE_ROLE|PASSWORD|TOKEN)")
 RE_SERVICE_KEY = re.compile(r"service[_-]?role", re.I)
 RE_UNSAFE_HTML = re.compile(r"dangerouslySetInnerHTML|innerHTML|v-html")
@@ -30,7 +30,12 @@ RE_CORS_STAR = re.compile(r"Access-Control-Allow-Origin[\"']?\s*[:,]\s*[\"']\*")
 RE_CREDENTIALS = re.compile(r"Allow-Credentials[\"']?\s*[:,]\s*(true|\"true\")", re.I)
 RE_COOKIE_SET = re.compile(r"\b(setCookie|res\.cookie|cookies\(\)\.set|set-cookie)\b", re.I)
 RE_COOKIE_FLAGS = re.compile(r"httpOnly", re.I)
-RE_AUTH_ROUTE = re.compile(r"(login|signin|sign-in|signup|sign-up|register|reset|forgot|password)", re.I)
+RE_AUTH_ROUTE = re.compile(r"(login|signin|sign-in|signup|sign-up|register|reset|forgot|password|auth)", re.I)
+RE_LOGIN_ROUTE = re.compile(r"[\"\x27/](login|signin|sign-in)[\"\x27/]", re.I)
+RE_HASH_CALL = re.compile(r"HashPassword|VerifyPassword|Argon2id|bcrypt|scrypt", re.I)
+RE_CLIENT_IP_HEADER = re.compile(r"CF-Connecting-IP|X-Forwarded-For|X-Real-IP", re.I)
+RE_FWD_CLEAR = re.compile(r"KnownProxies\.Clear|KnownIPNetworks\.Clear|KnownNetworks\.Clear")
+RE_CONCURRENCY_CAP = re.compile(r"SemaphoreSlim|Semaphore\(|Limiter|Concurrency|WorkerPool", re.I)
 RE_RATE_LIMIT = re.compile(r"rate[_-]?limit|throttle", re.I)
 RE_RAW_SQL = re.compile(r"(query|execute|raw)\s*\(\s*[`\"'][^`\"']*(\$\{|\"\s*\+|'\s*\+)")
 RE_LOCAL_REDIRECT = re.compile(r"callbackUrl|redirectTo|[\"']next[\"']", re.I)
@@ -67,7 +72,7 @@ def scan(root: Path):
     gi = ignore.read_text(encoding="utf-8") if ignore.is_file() else ""
     rows.append(("A2", ".env git-ignored", "PASS" if re.search(r"^\.env", gi, re.M) else "FAIL", "HIGH", ".gitignore"))
 
-    hits = {k: [] for k in ("A1", "B1", "D2", "E1", "E3", "E4", "F2", "G1", "H2", "H3", "H4", "I1", "J1", "J6", "M1")}
+    hits = {k: [] for k in ("A1", "B1", "D2", "E1", "E3", "E4", "F2", "G1", "H2", "H3", "H4", "I1", "J1", "J6", "M1", "G4", "G8")}
     for p in files:
         if p.suffix not in SOURCE:
             continue
@@ -87,8 +92,12 @@ def scan(root: Path):
             hits["E4"].append(f"{rel}:{first_line(text, RE_CORS_STAR)}")
         if RE_COOKIE_SET.search(text) and not RE_COOKIE_FLAGS.search(text):
             hits["F2"].append(f"{rel}:{first_line(text, RE_COOKIE_SET)}")
-        if RE_AUTH_ROUTE.search(rel) and not RE_RATE_LIMIT.search(text):
+        if (RE_AUTH_ROUTE.search(rel) or RE_LOGIN_ROUTE.search(text)) and not RE_RATE_LIMIT.search(text):
             hits["G1"].append(rel)
+        if RE_CLIENT_IP_HEADER.search(text) or RE_FWD_CLEAR.search(text):
+            hits["G8"].append(f"{rel}:{first_line(text, RE_CLIENT_IP_HEADER) or first_line(text, RE_FWD_CLEAR)}")
+        if RE_HASH_CALL.search(text) and not RE_CONCURRENCY_CAP.search(text):
+            hits["G4"].append(f"{rel}:{first_line(text, RE_HASH_CALL)}")
         if RE_RAW_SQL.search(text):
             hits["H3"].append(f"{rel}:{first_line(text, RE_RAW_SQL)}")
         if RE_JWT_DECODE.search(text) and not RE_JWT_VERIFY.search(text):
@@ -118,6 +127,8 @@ def scan(root: Path):
         "J1": ("Token decoded without verification", "CRITICAL"),
         "J6": ("Secret-like value passed to a log call", "HIGH"),
         "M1": ("Stack trace in a response body", "MEDIUM"),
+        "G8": ("Client IP taken from a header without a trusted-proxy check (review: the header can be forged)", "HIGH"),
+        "G4": ("Password hashing call with no concurrency cap in the file (review: N parallel logins multiply memory)", "HIGH"),
     }
     for check_id, found in hits.items():
         if check_id == "D2":
