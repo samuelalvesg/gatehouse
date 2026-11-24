@@ -1,49 +1,48 @@
 ---
 name: flutter-security
-description: Secure Flutter token/PII storage, build-time secrets, network trust, and release hardening using OWASP Mobile practices. Use for secure storage, secret injection, certificate pinning, jailbreak/root risk, or release builds—not generic form validation, API error handling, auth-provider setup, or tests of existing security services.
+description: Protect tokens, personal data and secrets in a Flutter app: secure storage, build-time configuration with --dart-define, obfuscated release builds, PII masking in logs, and HTTPS-only networking. Use when storing credentials, handling personal data, configuring builds, or reviewing a release.
 metadata:
   triggers:
     files:
-    - 'lib/infrastructure/**'
+    - '**/*_local_datasource.dart'
+    - '**/*_storage*.dart'
     - 'pubspec.yaml'
+    - '**/*_http_client.dart'
     keywords:
-    - secure_storage
+    - flutter_secure_storage
+    - SharedPreferences
+    - dart-define
     - obfuscate
-    - jailbreak
-    - pinning
     - PII
-    - OWASP
+    - token
 ---
-
 # Mobile Security
 
 ## **Priority: P0 (CRITICAL)**
 
 ## Implementation Workflow
 
-1. **Store secrets securely** — Use `flutter_secure_storage` for tokens/PII. Never use `shared_preferences` for sensitive data.
-2. **Externalize secrets** — Never store API keys in Dart code. Use `--dart-define` or `.env` files.
-3. **Obfuscate releases** — Build `--obfuscate --split-debug-info=./symbols`. Deterrent only — move sensitive logic to backend.
-4. **Pin certificates** — `dio_certificate_pinning` for high-security apps to prevent MITM.
-5. **Root detection** — `flutter_jailbreak_detection` for root/jailbreak checks in financial/sensitive apps.
-6. **Mask PII** — Redact PII (email, phone) from all logs and analytics.
+1. **Tokens and personal data** go in `flutter_secure_storage`. Never in `shared_preferences`, plain files or logs.
+2. **Secrets are not in Dart code.** Pass them at build time with `--dart-define` (for example, the API base URL). Keep signing keys and service credentials out of the repository.
+3. **Release builds** use `--obfuscate --split-debug-info=<folder>` and keep the symbol files out of the repository. Obfuscation is a deterrent, not a control: keep sensitive rules on the backend.
+4. **Mask PII in logs.** Log identifiers, not e-mails, phones, documents or tokens. Check analytics events the same way.
+5. **HTTPS only.** Every base URL uses `https`. Certificate validation is never disabled outside debug builds, and a debug-only bypass is marked in code and in the docs.
 
-### Secure Storage & Release Build Examples
-
-See [implementation examples](references/implementation.md) for secure storage usage and obfuscated release build commands.
+Decisions that are not part of this skill and must be made per product: certificate pinning, and root or jailbreak detection. Record the decision in the project before adding either one.
 
 ## Reference & Examples
 
-SSL Pinning & Secure Storage: [references/REFERENCE.md](references/REFERENCE.md).
+See [references/implementation.md](references/implementation.md) for secure storage and the release build command, and [references/network-security.md](references/network-security.md) for HTTPS and certificate rules.
 
 ## Anti-Patterns
 
-- **No Secrets in SharedPreferences**: Use `flutter_secure_storage` for tokens and PII
-- **No Hardcoded API Keys**: Use `--dart-define` or secure vaults for all secrets
-- **No Unobfuscated Releases**: Always build with `--obfuscate --split-debug-info`
-- **No PII in Logs**: Mask or omit sensitive data from all logs and analytics events
+- **No secrets in `shared_preferences`**: use secure storage.
+- **No hardcoded keys or URLs with credentials**: use `--dart-define`.
+- **No unobfuscated release builds**.
+- **No PII in logs or analytics**.
+- **No certificate validation switched off in release builds**.
 
 ## Related Topics
 
-common/security-standards | layer-based-clean-architecture | performance
-
+- Token refresh and the auth interceptor: `flutter-retrofit-networking`.
+- Backend and OWASP review: `owasp-sanitizer`.

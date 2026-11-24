@@ -1,40 +1,47 @@
-# Token Refresh Pattern
+# Token Refresh with One Retry
 
-When a `401 Unauthorized` error occurs, the networking layer should handle the refresh cycle transparently.
-
-## **Implementation Flow (Dio Interceptor)**
+## Interceptor
 
 ```dart
 class AuthInterceptor extends QueuedInterceptorsWrapper {
-  final Dio dio;
-  final SecureStorage storage;
+  AuthInterceptor({required this.dio, required this.readToken, required this.refreshToken});
 
-  AuthInterceptor(this.dio, this.storage);
+  final Dio dio;
+  final Future<String?> Function() readToken;
+  final Future<String?> Function() refreshToken;
+
+  static const _retriedKey = '_retriedAfterRefresh';
+
+  @override
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
+    final token = await readToken();
+    if (token != null) options.headers['Authorization'] = 'Bearer $token';
+    handler.next(options);
+  }
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
-    if (err.response?.statusCode == 401) {
-      // 1. Refresh the token
-      final newToken = await _performRefresh();
-      
-      if (newToken != null) {
-        // 2. Retry the original request with new token
-        final options = err.requestOptions;
-        options.headers['Authorization'] = 'Bearer $newToken';
-        
-        final response = await dio.fetch(options);
-        return handler.resolve(response);
-      }
+    final alreadyRetried = err.requestOptions.extra[_retriedKey] == true;
+    if (err.response?.statusCode != 401 || alreadyRetried) {
+      return handler.next(err);
     }
-    return handler.next(err);
-  }
+    final newToken = await refreshToken();
+    if (newToken == null) return handler.next(err);
 
-  Future<String?> _performRefresh() async {
-    // Logic to call refresh endpoint and update storage
+    final retry = err.requestOptions
+      ..headers['Authorization'] = 'Bearer $newToken'
+      ..extra[_retriedKey] = true;
+    try {
+      handler.resolve(await dio.fetch<dynamic>(retry));
+    } on DioException catch (e) {
+      handler.next(e);
+    }
   }
 }
 ```
 
-## **Why QueuedInterceptorsWrapper?**
+## Why these choices
 
-Using `QueuedInterceptorsWrapper` ensures that if multiple requests trigger a 401 at the same time, they are queued while the first one performs the token refresh, preventing multiple redundant refresh calls.
+- `QueuedInterceptorsWrapper` holds the other requests while one refresh runs. Without it, several 401s start several refreshes, and the later ones can invalidate the earlier tokens.
+- The flag in `extra` limits the repeat to one attempt. A second 401 returns to the caller as an error.
+- If the refresh itself fails, the original 401 is returned. The caller then decides to sign the user out.

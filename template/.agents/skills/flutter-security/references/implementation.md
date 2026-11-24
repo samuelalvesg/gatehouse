@@ -3,20 +3,28 @@
 ## Secure Storage
 
 ```dart
-final secureStorage = const FlutterSecureStorage();
+const storage = FlutterSecureStorage();
 
-// Store token securely
-await secureStorage.write(key: 'auth_token', value: token);
-
-// Read token
-final token = await secureStorage.read(key: 'auth_token');
+await storage.write(key: 'auth_token', value: token);
+final token = await storage.read(key: 'auth_token');
+await storage.delete(key: 'auth_token');
 ```
 
-## Release Build Command
+## Build-Time Configuration
+
+```dart
+const apiBaseUrl = String.fromEnvironment('API_URL');
+```
 
 ```bash
 flutter build appbundle \
   --obfuscate \
   --split-debug-info=build/debug-info \
   --dart-define=API_URL=$API_URL
+```
+
+## Masking in Logs
+
+```dart
+log('Login for user ${maskId(userId)}');
 ```
