@@ -117,7 +117,13 @@ All of them use the Python standard library only, and each has tests under `scri
 | `scripts/backlog/split_backlog.py` | One-time migration of a single-file backlog; dry run by default |
 | `scripts/backlog/check_doc_paths.py` | Links and backticked paths in Markdown that point to nothing |
 | `scripts/docs/check_docs_fresh.py` | Freshness gate for generated docs, with pluggable generators (`generators/dependencies.py` draws the local dependency graph) |
+| `scripts/skills/check_skill_ids.py` | Confirms every check ID cited by the scanners exists in the skill that owns it. `--snapshot` records IDs and text hashes; `--compare` lists removed and reworded checks |
+| `scripts/provenance/check_provenance.py` | Checks each `PROVENANCE.md` (source, licence, commit, last check). `--online` asks git sources for their HEAD and flags `REVIEW` when it moved |
 | `scripts/lint/flutter_analyze_report.py` | Runs `flutter analyze` on every package and groups the issues by rule (read-only) |
+
+## Provenance
+
+Every skill with an outside origin has a `PROVENANCE.md` next to its `SKILL.md`: source, licence, the commit copied (or `NOT VERIFIED` when it was not recorded), the changes made, and a coverage note. Skills written for this repository have no such file. `scripts/provenance/check_provenance.py` checks the records.
 
 ## How the agents use the skills
 
