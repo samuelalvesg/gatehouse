@@ -80,6 +80,12 @@ class ScanTest(unittest.TestCase):
         self.put("auth/hasher.cs", "var gate = new SemaphoreSlim(4);\nvar h = new Argon2id(bytes).GetBytes(32);\n")
         self.assertEqual(status(scan.scan(self.root), "G4"), "PASS")
 
+    def test_client_ip_header_without_trust_check_is_flagged(self):
+        self.put("net/ip.cs", "var ip = ctx.Request.Headers[\"CF-Connecting-IP\"];\n")
+        self.assertEqual(status(scan.scan(self.root), "G8"), "FAIL")
+        self.put("net/ip.cs", "opts.KnownProxies.Clear();\n")
+        self.assertEqual(status(scan.scan(self.root), "G8"), "FAIL")
+
     def test_cookie_without_httponly_fails(self):
         self.put("auth/session.ts", "res.cookie('s', token, { secure: true });\n")
         self.assertEqual(status(scan.scan(self.root), "F2"), "FAIL")
