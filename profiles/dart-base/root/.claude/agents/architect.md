@@ -19,7 +19,7 @@ model: opus
 4. Define interface contracts, DTO schemas, and database migration paths.
 5. For a new entry point, trust boundary or privileged role, apply skill `threat-modeling` before the contract is final.
 6. For changes to APIs, data writes or releases, apply skills `api-change-review`, `data-consistency-review` and `release-safety-review` to the design, and record their open items in the handoff.
-7. Provide structured handoff to `@developer` (or stack-specific dev) following `.claude/TEAM.md`.
+7. Provide structured handoff to `@developer` (or stack-specific dev) following `AGENTS.md`.
 
 # Boundaries & Limits
 - CAN: write/update ADRs, contracts, interfaces, and architecture diagrams.

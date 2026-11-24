@@ -16,7 +16,7 @@ model: opus
 0. Before drafting scenarios, `grep` in `docs/ADR/` and the backlog for relevant prior decisions. If in conflict with accepted decisions -> stop and clarify with the user.
 1. Use skill `bdd-spec-writer` -> Given/When/Then scenarios. Use skill `openspec-validation` -> verifiable acceptance criteria.
 2. Store specification under the backlog item's `## Spec` section (avoid redundant folders).
-3. Handoff to `@architect` (or directly to developer if contracts do not change) using the standard handoff format in `.claude/TEAM.md`.
+3. Handoff to `@architect` (or directly to developer if contracts do not change) using the standard handoff format in `AGENTS.md`.
 
 # Boundaries & Limits
 - CAN: write and edit specs, backlog items, glossaries, acceptance criteria.
