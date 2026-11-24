@@ -50,6 +50,47 @@ Then:
 - `AGENTS.md`, `CLAUDE.md`, the `projects/` texts and parts of `docs/` are in Brazilian Portuguese; the agent files are in English. Translate what you need.
 - Left out on purpose because they are tied to the original project: stack-specific developers, local-model (Ollama) profiles and a few skills such as `local-llama-bridge` and `telemetry-tracing`.
 - Several skills derive from Apache-2.0 plugins; see `template/.claude/NOTICE.md`.
+## Plugins declarados no repo
+
+Plugin instalado só na conta do claude.ai vale para quem tem a conta. Para que
+qualquer sessão que abra o repo receba o plugin, declare em
+`.claude/settings.json` (o template já traz `code-review`):
+
+```json
+"extraKnownMarketplaces": {
+  "claude-plugins-official": { "source": { "source": "github", "repo": "anthropics/claude-plugins-official" } },
+  "dart-flutter": { "source": { "source": "github", "repo": "flutter/agent-plugins" } }
+},
+"enabledPlugins": {
+  "code-review@claude-plugins-official": true,
+  "csharp-lsp@claude-plugins-official": true,
+  "rust-analyzer-lsp@claude-plugins-official": true,
+  "dart-flutter@dart-flutter": true
+}
+```
+
+Escolha por stack: .NET → `csharp-lsp` (precisa de `csharp-ls`); Rust →
+`rust-analyzer-lsp` (precisa de `rust-analyzer`); Flutter → `dart-flutter`.
+O setup de `environments/` instala os dois servidores. Plugin sem
+`marketplace.json` público (por exemplo `backend-design`) não dá para declarar:
+fica na conta, e os agentes o citam como "usar se carregado". Copiar skill de
+plugin para o repo só quando for adaptar, com a origem no `NOTICE.md`.
+`tests/validate.sh` reprova plugin cujo marketplace não está declarado.
+
+A skill `verify-delivery` é o gate de entrega do repo: preencher os comandos
+(os mesmos do CI). `@developer`, `@qa-engineer` e `@reviewer` a citam.
+
+## Perfis dos repositórios example
+
+`profiles/` guarda a configuração exata dos repos example, example-backend,
+example-frontend e example-edge (agentes com SOUL, skills, regras, MCP, plugins):
+este repo é a fonte e os repos recebem a cópia com
+`./install.sh <repo> --profile <nome> --force`; `--check` confere se a cópia do
+repo continua igual. Detalhes em [`profiles/README.md`](profiles/README.md).
+
+## Fora do template (de propósito)
+
+`rust-dev` e `backend-dev`/`frontend-dev` específicos (viram cópias do `developer`), perfis de modelo local (Ollama), skills `local-llama-bridge`, `auto-doc-updater`, `diagram-generator`, `query-performance-tuner`, `telemetry-tracing`, `ux-copy-ptbr` e o `.agents/` (MCP próprios): acopladas ao example. Estão em `profiles/`, não em `template/`.
 
 ## License
 
