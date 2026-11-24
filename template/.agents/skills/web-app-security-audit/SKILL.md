@@ -40,7 +40,7 @@ One table, then the fixes.
 - **D1** Protected pages and API routes check the session on the server.
 - **D2** Server actions check session and permission before changing data.
 - **D3** Authorization does not rely only on middleware or the frontend.
-- **D4** The framework version is patched against known middleware-bypass issues; check the vendor advisory, do not assume.
+- **D4** The framework version is patched against known middleware-bypass issues. Check the version against the vendor advisory; do not assume.
 - **D5** IDOR: changing an ID in a request cannot read or change another user's data. Test one case.
 - **D6** Admin rights are checked on the server and in the database, not only in the UI.
 - **D7** Hidden UI elements are not the only protection.
@@ -65,12 +65,12 @@ One table, then the fixes.
 - **G1** Login, sign-up and password recovery are rate-limited.
 - **G2** Routes that call paid APIs have rate limits and spend caps, per user and global.
 - **G3** Public forms and unauthenticated endpoints have rate limits or a CAPTCHA.
-- **G4** Password hashing uses a fixed, reviewed memory cost, and concurrent hash operations are capped (semaphore, queue or worker pool). Without a cap, N parallel logins allocate N times the memory cost (for example 64 MiB each).
-- **G5** Login, token refresh and recovery are rate-limited per account and per IP, at the endpoint and, where possible, at the edge. Check every login route, including minimal-API handlers. Not verified if the edge configuration is not in the repository.
-- **G6** Unknown users and wrong passwords take comparable time: a dummy hash runs on the unknown-user path.
+- **G4** Password hashing is memory-hard and bounded. Each hash or verify call uses a fixed, reviewed memory cost, and the number of concurrent hashing operations is capped (semaphore, queue or worker pool). Without a cap, N parallel logins allocate N times the memory cost (for example 64 MiB each).
+- **G5** Login, token refresh and password recovery are rate-limited per account and per IP, both by a limiter on the endpoint and, where possible, at the edge. Check the attribute on every login route, including minimal-API handlers. Not verified if the edge configuration is not in the repository.
+- **G6** An unknown user and a wrong password take comparable time: the hash runs (or a dummy hash runs) on the unknown-user path, so response time does not reveal which accounts exist.
 - **G7** Password length has a maximum (for example 128 or 256 characters) and the route's body size limit is below the framework default.
-- **G8** Client IP for rate limits is trusted only when the connection comes from a known proxy or the edge's published ranges. `CF-Connecting-IP`, `X-Forwarded-For` and `X-Real-IP` are read only after that check, and forwarded-header options do not clear the known-proxy lists. Otherwise an attacker sends a new IP header per attempt and bypasses every per-IP limit. When the edge is part of the design, check that the origin accepts traffic only from it.
-- **G9** Login protection escalates: a high global ceiling, per-account and per-IP sliding windows, a CAPTCHA or managed challenge after a few failures (for example 5), and growing delays. No temporary account lock, which lets an attacker lock out real users. The edge rule must exist in the infrastructure configuration; if not in the repository, `NOT VERIFIED`.
+- **G8** The client IP used for rate limits is trusted only when the connection comes from a known proxy or the edge provider's published ranges. Headers such as `CF-Connecting-IP`, `X-Forwarded-For` and `X-Real-IP` are read only after that check, and forwarded-header options do not clear the known-proxy lists. Without this, an attacker sends a new IP header on each attempt and bypasses every per-IP limit. When the edge is part of the design, check that the origin accepts traffic only from it.
+- **G9** Login protection escalates: a high global ceiling, per-account and per-IP sliding windows, a CAPTCHA or managed challenge after a few failures (for example 5), and growing delays. A temporary account lock is avoided, because it lets an attacker lock out real users. The edge rule must exist in the infrastructure configuration; if it is not in the repository, mark `NOT VERIFIED`.
 
 ## H. Input and output
 - **H1** Every request body and query parameter is validated on the server with a schema.
@@ -109,7 +109,7 @@ One table, then the fixes.
 ## N. Dependencies and data lifecycle
 - **N1** Known-vulnerable dependencies are checked with the ecosystem's audit tool (`npm audit`, `pip-audit`, `cargo audit`, `dotnet list package --vulnerable`) and the result is recorded. `NOT VERIFIED` if the tool did not run.
 - **N2** Destructive migrations (drop, type change that loses data) are reviewed and have a rollback path.
-- **N3** Backups exist and have been restored at least once. Not visible in the repository: `NOT VERIFIED` without evidence.
+- **N3** Backups exist and have been restored at least once. This cannot be seen in the repository: mark `NOT VERIFIED` unless there is evidence.
 
 ## Stack modules (only when the stack is present)
 - **Supabase or Firebase:** B1, B2 and C1 are checked against policy files and migrations, not only client code; Firebase: the security rules file.
