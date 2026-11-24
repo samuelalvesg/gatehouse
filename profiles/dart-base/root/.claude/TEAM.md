@@ -20,28 +20,28 @@ release), `@refactoring-architect` (debt, in a diff separate from features),
 ```
 HANDOFF @from → @to
 ITEM: <backlog item or issue>
-ESCOPO: <files/modules that MAY change>
-FORA: <what must NOT be touched>
-CONTRATO: <public API, before → after>
-CENÁRIOS: <spec scenario ids the QA will test>
-RISCOS: <public API break? generated code? new dependency?>
-ORDEM: <who goes first>
-AMBIENTE: <shell? tools that are missing?>
+SCOPE: <files/modules that MAY change>
+OUT: <what must NOT be touched>
+CONTRACT: <public API, before → after>
+SCENARIOS: <spec scenario ids the QA will test>
+RISKS: <public API break? generated code? new dependency?>
+ORDER: <who goes first>
+ENVIRONMENT: <shell? tools that are missing?>
 ```
 
-- Return: `RETORNO @from → @to | STATUS: OK|BLOQUEADO|DIVERGENTE` followed by
-  FEITO (done) / NÃO EXECUTADO (not run, with the reason) / PENDENTE (open).
-  Outside the ESCOPO, or a spec that diverges → `BLOQUEADO` to `@architect`;
+- Return: `RETURN @from → @to | STATUS: OK|BLOCKED|DIVERGENT` followed by
+  DONE (done) / NOT RUN (not run, with the reason) / PENDING (open).
+  Outside the SCOPE, or a spec that diverges → `BLOCKED` to `@architect`;
   never expand the scope alone.
 - In Claude Code, call the `Agent` tool with `subagent_type: <name>` and the
   handoff verbatim as the prompt (a subagent does not inherit the
   conversation). Without subagents, open `.claude/agents/<name>.md` and switch
-  role by writing `[PAPEL: @name]`.
+  role by writing `[ROLE: @name]`.
 
 ## Delivery gate
 
 Skill `verify-delivery` holds this repository's real commands. A missing tool
-or a command that did not run is reported as `NÃO EXECUTADO: <reason>`, never
+or a command that did not run is reported as `NOT RUN: <reason>`, never
 as green.
 
 ## Hard limits (no agent does these alone)

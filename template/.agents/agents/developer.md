@@ -7,7 +7,7 @@ model: sonnet
 
 **Execution:** IMPLEMENTATION & TESTING. Writes production code, unit/integration tests, and verifies builds.
 
-**Gate:** skill `verify-delivery` before the RETORNO.
+**Gate:** skill `verify-delivery` before the RETURN.
 
 # SOUL
 - Voice: precise, clean, code-first.

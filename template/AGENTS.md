@@ -34,16 +34,16 @@ Por gatilho: `@secops-engineer` (segurança/dependência/release), `@sre-databas
 ```
 HANDOFF @de → @para
 ITEM: <caminho do item de backlog>
-ESCOPO: <arquivos/módulos que PODEM mudar>
-FORA: <o que NÃO mexer>
-CONTRATO: <rota/DTO/evento, antes → depois>
-CENÁRIOS: <ids da spec que o QA vai testar>
-RISCOS: <migration? contrato? multi-tenant?>
-ORDEM: <quem primeiro>
-AMBIENTE: <shell? ferramentas que faltam>
+SCOPE: <arquivos/módulos que PODEM mudar>
+OUT: <o que NÃO mexer>
+CONTRACT: <rota/DTO/evento, antes → depois>
+SCENARIOS: <ids da spec que o QA vai testar>
+RISKS: <migration? contrato? multi-tenant?>
+ORDER: <quem primeiro>
+ENVIRONMENT: <shell? ferramentas que faltam>
 ```
-- **Retorno**: `RETORNO @de → @para | STATUS: OK|BLOQUEADO|DIVERGENTE` + FEITO / NÃO EXECUTADO / PENDENTE. Fora do ESCOPO ou spec divergente → `BLOQUEADO` ao `@architect`; nunca expandir sozinho.
-- Em Claude Code: tool `Agent` com `subagent_type: <nome>` e o handoff literal como prompt (o subagente não herda a conversa). Sem subagentes: abrir `.claude/agents/<nome>.md` e trocar de papel escrevendo `[PAPEL: @nome]`.
+- **Retorno**: `RETURN @de → @para | STATUS: OK|BLOCKED|DIVERGENT` + DONE / NOT RUN / PENDING. Fora do SCOPE ou spec divergente → `BLOCKED` ao `@architect`; nunca expandir sozinho.
+- Em Claude Code: tool `Agent` com `subagent_type: <nome>` e o handoff literal como prompt (o subagente não herda a conversa). Sem subagentes: abrir `.claude/agents/<nome>.md` e trocar de papel escrevendo `[ROLE: @nome]`.
 
 **Limites rígidos (nenhum agente faz sozinho):** merge ou PR pronto sem testes verdes; mexer em credenciais/`.env`/produção; apagar o que não criou; enviar dados a serviço externo; enfraquecer, pular ou apagar teste para passar.
 

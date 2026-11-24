@@ -1,13 +1,13 @@
 ---
 name: verify-delivery
-description: Runs this repository's delivery gate (build, lint, tests, migration checks) and reports PASS, FAIL or NÃO EXECUTADO per command. Use before handing off to @qa-engineer or @reviewer, before marking a PR ready, and whenever someone asks whether it is green.
+description: Runs this repository's delivery gate (build, lint, tests, migration checks) and reports PASS, FAIL or NOT RUN per command. Use before handing off to @qa-engineer or @reviewer, before marking a PR ready, and whenever someone asks whether it is green.
 ---
 
 # Verify delivery
 
 ## Rules
 - Detect capability first: `command -v <tools of the stack>`. Missing tool →
-  `NÃO EXECUTADO: <tool> ausente`; never report green.
+  `NOT RUN: <tool> ausente`; never report green.
 - Never skip, weaken or delete a test to get green.
 - While fixing, re-run only what failed; the full gate again at the end.
 - A test runner that skips tests silently (database, container, device) is
@@ -26,6 +26,6 @@ Examples by stack (replace the placeholder above and delete this list):
 ## Report (same block in the PR body and in `SESSION_HANDOFF.md`)
 ```
 VERIFY: <repo> @ <short sha>
-<command> → PASS | FAIL (<n>) | NÃO EXECUTADO: <motivo>
+<command> → PASS | FAIL (<n>) | NOT RUN: <motivo>
 SUITE: total / passed / failed / skipped
 ```
