@@ -29,5 +29,14 @@
   "NÍVEL": "LEVEL",
   "COBERTURA": "COVERAGE",
   "ACHADO": "FINDING",
-  "AÇÃO": "ACTION"
+  "AÇÃO": "ACTION",
+  "APROVADO COM RESSALVAS": "APPROVED WITH NOTES",
+  "APROVADO": "APPROVED",
+  "REPROVADO": "REJECTED",
+  "VEREDITO": "VERDICT",
+  "BLOQUEIA": "BLOCKS",
+  "CORRIGIR": "FIX",
+  "SUGESTÃO": "SUGGESTION",
+  "não verificado": "not verified",
+  "Execução": "Execution"
 }
