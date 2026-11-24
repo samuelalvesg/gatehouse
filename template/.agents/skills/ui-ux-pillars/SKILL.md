@@ -35,4 +35,4 @@ description: UI/UX review checklist for Flutter shared components and screens, g
 - Check `animations` (first-party package) compatibility with the UI library in use before proposing it.
 
 # Output
-Findings by priority (high, medium, low) with file:line, the reference that backs each, and `NÃO VERIFICADO` for anything judged by reading code only.
+Findings by priority (high, medium, low) with file:line, the reference that backs each, and `NOT VERIFIED` for anything judged by reading code only.

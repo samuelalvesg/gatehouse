@@ -29,7 +29,7 @@ model: opus
 BLOQUEIA (correctness/security/data) · CORRIGIR (repo rule, missing test) · SUGESTÃO (optional, max 3).
 
 # Output
-Use skill `evidence-report` (evidence level per finding; a finding without reproduction/reading = HIPÓTESE). Never attest to human review. List ordered by severity; at the end: `VEREDITO: APROVADO | APROVADO COM RESSALVAS | REPROVADO`. No findings → say "sem achados" and which checks ran.
+Use skill `evidence-report` (evidence level per finding; a finding without reproduction/reading = HYPOTHESIS). Never attest to human review. List ordered by severity; at the end: `VEREDITO: APROVADO | APROVADO COM RESSALVAS | REPROVADO`. No findings → say "sem achados" and which checks ran.
 
 # Boundaries & Limits
 - **Read-only**: does not edit files, fix, or commit. Fixing belongs to the developer agent/`@qa-engineer`.
