@@ -23,13 +23,46 @@ Rules that apply to everyone:
 
 | Folder | Content |
 |---|---|
-| `template/` | What goes in your project root: `AGENTS.md`, `CLAUDE.md`, `.agents/` (9 agents, 25 skills, rules), symlinks for `.claude/` and `.cursor/`, settings, a session handoff file |
+| `template/` | What goes in your project root: `AGENTS.md`, `CLAUDE.md`, `.agents/` (9 agents, 47 skills, rules, a skills-by-signal index), symlinks for `.claude/` and `.cursor/`, settings, a session handoff file |
+| `template/scripts/` | Deterministic checks the agents and CI can run: backlog tools, docs freshness gate, web and skill security scanners, scope check, Flutter analyze report (see below) |
+| `template/docs/adr-examples/` | Four generic decision records (definition of done, leaf package, code in English, tests in every change) |
 | `docs/` | Notes from evaluating popular skills |
 | `profiles/` | Ready-made sets for a kind of repo (`code-repo`, `dart-package`, `flutter-app`); see [`profiles/README.md`](profiles/README.md) |
 | `install.sh` | Copies `template/` or a profile into a repository without overwriting; `--check` lists drift |
 | `tests/validate.sh` | Checks agent and skill frontmatter and that `install.sh` is idempotent |
 
-The skills cover specs (`bdd-spec-writer`, `openspec-validation`), design (`adr-writer`, `tool-contract-design`), quality (`test-strategy`, `test-mutation-audit`, `evidence-report`), security (`owasp-sanitizer`), debugging (`root-cause-debug`, `incident-postmortem`), debt (`code-smell-eliminator`, `tech-debt-triage`) and writing (`humanizer`, `token-optimization`).
+The skills cover:
+
+- **Specs and design:** `bdd-spec-writer`, `openspec-validation`, `adr-writer`, `tool-contract-design`, `threat-modeling`.
+- **Review:** `owasp-sanitizer`, `web-app-security-audit` (fixed PASS / FAIL / N/A / NOT VERIFIED table), `data-consistency-review` (idempotency, locking, sagas, cache keys), `api-change-review` (compatibility, versioning, webhooks), `release-safety-review` (migrations, flags, rollback, backups), `infra-config-review` (Dockerfile, Kubernetes, Terraform, CI).
+- **Testing:** `test-strategy`, `test-mutation-audit`, `authorized-testing` (scope, dummy fixtures, verification before a finding is reported).
+- **Operations and quality:** `resilience-patterns`, `telemetry-tracing`, `performance-profiling`, `query-performance-tuner`, `incident-postmortem`, `release-checklist`, `root-cause-debug`, `tech-debt-triage`, `code-smell-eliminator`.
+- **Backlog:** `backlog-items`, `backlog-triage`, `backlog-check`.
+- **Writing:** `humanizer`, `token-optimization`, `ux-copy-ptbr`.
+
+`template/.agents/SKILLS-INDEX.md` maps a task's signal (an API change, a login path, a Dockerfile) to the skills to load, so an agent reads one to three skills per pass instead of all of them.
+
+## Scripts
+
+All of them use the Python standard library only, and each has tests under `scripts/`.
+
+| Script | What it does |
+|---|---|
+| `scripts/security/scan_web_patterns.py` | Mechanical pass of the web audit: public secrets, unsafe HTML, login without rate limit, client IP read from headers, hashing without a concurrency cap, cookies without `HttpOnly`. Every hit is a lead to read, not a verdict |
+| `scripts/security/scan_skill_injection.py` | Finds instruction patterns that try to override authority, send data out, read credentials or chain shell commands, in agent and skill files. Defensive lines are excluded |
+| `scripts/security/scope_check.py` | Checks a scope file (owner, authorizer, environment, dates, hosts) before any active test. Production is refused unless flagged |
+| `scripts/backlog/check_backlog.py` | Integrity of a file-per-item backlog and its index |
+| `scripts/backlog/triage_backlog.py` | One row per item, with facts only (open boxes, contradictions, empty bodies) |
+| `scripts/backlog/new_item.py`, `set_status.py` | Create an item, or change its status in the file and the index together |
+| `scripts/backlog/report_done.py` | Generates the done view from the item files |
+| `scripts/backlog/split_backlog.py` | One-time migration of a single-file backlog; dry run by default |
+| `scripts/backlog/check_doc_paths.py` | Links and backticked paths in Markdown that point to nothing |
+| `scripts/docs/check_docs_fresh.py` | Freshness gate for generated docs, with pluggable generators (`generators/dependencies.py` draws the local dependency graph) |
+| `scripts/lint/flutter_analyze_report.py` | Runs `flutter analyze` on every package and groups the issues by rule (read-only) |
+
+## Agents
+
+The `architect` applies `threat-modeling` to new trust boundaries and the three release-facing review skills to its design. The `reviewer` runs the web scanner and `web-app-security-audit` on changed routes. The `secops-engineer` applies `authorized-testing` before any test that sends traffic to a running system, and `threat-modeling` and `infra-config-review` to designs and build files.
 
 ## Use it
 
@@ -45,6 +78,7 @@ Then:
 1. Fill in the `<placeholders>` in `AGENTS.md` and `CLAUDE.md`: project, repository map, commit attribution, language.
 2. Copy `.agents/agents/developer.md` once per stack (`backend-dev.md`, `frontend-dev.md`) and fill in "Stack".
 3. Adapt the skills that name a stack (`owasp-sanitizer`, `test-strategy`, `a11y-audit`, `graph-mapping` use .NET, Flutter and Rust examples).
+4. Install a profile instead of the template when the repo fits one (see `profiles/README.md`). Profiles copy the agents and skills of a kind of repo.
 
 ## Good to know
 
@@ -85,6 +119,7 @@ The `verify-delivery` skill is the repo's delivery gate: fill in its commands
 ## Left out of the template on purpose
 
 These are tied to the project the template came from: `rust-dev`, the stack-specific `backend-dev` and
-`frontend-dev` (in the template they are copies of `developer`), local-model (Ollama) profiles, the skills
-`local-llama-bridge`, `auto-doc-updater`, `diagram-generator`, `query-performance-tuner`, `telemetry-tracing`
-and `ux-copy-ptbr`, and the project's own MCP setup.
+`frontend-dev` (in the template they are copies of `developer`), local-model (Ollama) profiles, the skill
+`local-llama-bridge`, and the project's own MCP setup.
+
+Not included: a full multi-agent security audit pack (Cloudflare's `security-audit`, about 315 KB, MIT). It is heavy and expects sub-agents and an isolated sandbox. Its guidance mode may be used on its own; see the backlog for the decision.
