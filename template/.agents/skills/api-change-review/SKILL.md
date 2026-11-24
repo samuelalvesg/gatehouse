@@ -18,7 +18,7 @@ Decide who is affected before reading the diff: mobile apps that cannot be updat
 - **V7 Retries from the caller.** The endpoint is idempotent for methods that can be retried (see `data-consistency-review`, C1).
 - **V8 Limits.** Pagination, maximum page size, payload size and rate limits are part of the contract and are returned to the caller when hit (HTTP 429 with a retry hint, or the equivalent status).
 - **V9 Errors.** Error codes are stable and documented. The message can change; the code cannot.
-- **V10 Contract tests.** The published schema or proto is checked against the implementation in the test suite, and a consumer test exists for each breaking-risk field.
+- **V10 Contract tests.** The published schema or proto is checked against the implementation in the test suite, and a consumer test exists for each breaking-risk field. `NOT VERIFIED` if the suite cannot run in this review.
 - **V11 Documentation.** The contract change is written where consumers read it, with an example request and response.
 
 ## Related skills
