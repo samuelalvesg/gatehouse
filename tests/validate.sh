@@ -34,4 +34,46 @@ tmp="$(mktemp -d)"; trap 'rm -rf "$tmp"' EXIT
 echo "keep" > "$tmp/AGENTS.md"
 "$root/install.sh" "$tmp" >/dev/null
 [ "$(cat "$tmp/AGENTS.md")" = "keep" ] || { echo "install overwrote existing file"; fail=1; }
+
+# Profiles: a fresh install must
+# pass --check, hold valid agents/skills/JSON, and --check must notice drift.
+for lf in "$root"/profiles/*/LAYERS; do
+  prof="$(basename "$(dirname "$lf")")"
+  t="$(mktemp -d)"
+  "$root/install.sh" "$t" --profile "$prof" >/dev/null
+  "$root/install.sh" "$t" --profile "$prof" --check >/dev/null || { echo "profile $prof: fresh install fails --check"; fail=1; }
+  for f in "$t"/.claude/agents/*.md "$t"/.agents/agents/*.md; do [ -f "$f" ] && check "$f" name description tools model; done
+  for f in "$t"/.claude/skills/*/SKILL.md "$t"/.agents/skills/*/SKILL.md; do [ -f "$f" ] && check "$f" name description; done
+  for j in "$t"/.claude/settings.json "$t"/.mcp.json; do
+    [ -f "$j" ] || continue
+    python3 -c "import json,sys; json.load(open(sys.argv[1]))" "$j" || { echo "profile $prof: invalid JSON $j"; fail=1; }
+  done
+  [ -f "$t/.claude/settings.json" ] && { check_settings "$t/.claude/settings.json" || fail=1; }
+  victim="$(find -L "$t/.claude/skills" -name SKILL.md -print -quit)"
+  echo "drift" >> "$victim"
+  if "$root/install.sh" "$t" --profile "$prof" --check >/dev/null; then echo "profile $prof: --check missed a changed file"; fail=1; fi
+  "$root/install.sh" "$t" --profile "$prof" --force >/dev/null
+  rm -f "$victim"
+  "$root/install.sh" "$t" --profile "$prof" --check >/dev/null && { echo "profile $prof: --check missed a deleted file"; fail=1; } || true
+  "$root/install.sh" "$t" --profile "$prof" --force >/dev/null
+  d="$(dirname "$(find -L "$t/.claude/skills" -name SKILL.md -print -quit)")"
+  mkdir -p "$d/../zz-extra-skill" && echo "---" > "$d/../zz-extra-skill/SKILL.md"
+  if "$root/install.sh" "$t" --profile "$prof" --check >/dev/null; then echo "profile $prof: --check missed an unknown skill"; fail=1; fi
+  rm -rf "$t"
+done
+
+# The Dart layers are copies of template/ files: agents differ only by the
+# TEAM.md pointer, skills are byte-identical (verify-delivery is per repo).
+for f in "$root"/profiles/dart-base/root/.claude/agents/*.md; do
+  n="$(basename "$f")"
+  sed 's#following `AGENTS.md`#following `.claude/TEAM.md`#; s#standard handoff format in `AGENTS.md`#standard handoff format in `.claude/TEAM.md`#' \
+    "$root/template/.agents/agents/$n" | cmp -s - "$f" || { echo "dart-base agent drifted from template: $n"; fail=1; }
+done
+for layer in dart-base flutter-ui; do
+  for d in "$root"/profiles/$layer/root/.claude/skills/*/; do
+    n="$(basename "$d")"
+    [ "$n" = "verify-delivery" ] && continue
+    diff -r "$d" "$root/template/.agents/skills/$n" >/dev/null 2>&1 || { echo "$layer skill drifted from template: $n"; fail=1; }
+  done
+done
 exit $fail

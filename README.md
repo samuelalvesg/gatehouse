@@ -25,7 +25,8 @@ Rules that apply to everyone:
 |---|---|
 | `template/` | What goes in your project root: `AGENTS.md`, `CLAUDE.md`, `.agents/` (9 agents, 25 skills, rules), symlinks for `.claude/` and `.cursor/`, settings, a session handoff file |
 | `docs/` | Notes from evaluating popular skills |
-| `install.sh` | Copies `template/` into a repository without overwriting |
+| `profiles/` | Ready-made sets for a kind of repo (`code-repo`, `dart-package`, `flutter-app`); see [`profiles/README.md`](profiles/README.md) |
+| `install.sh` | Copies `template/` or a profile into a repository without overwriting; `--check` lists drift |
 | `tests/validate.sh` | Checks agent and skill frontmatter and that `install.sh` is idempotent |
 
 The skills cover specs (`bdd-spec-writer`, `openspec-validation`), design (`adr-writer`, `tool-contract-design`), quality (`test-strategy`, `test-mutation-audit`, `evidence-report`), security (`owasp-sanitizer`), debugging (`root-cause-debug`, `incident-postmortem`), debt (`code-smell-eliminator`, `tech-debt-triage`) and writing (`humanizer`, `token-optimization`).
@@ -36,6 +37,7 @@ The skills cover specs (`bdd-spec-writer`, `openspec-validation`), design (`adr-
 git clone https://github.com/samuelalvesg/gatehouse
 ./gatehouse/install.sh /path/to/your/project           # never overwrites
 ./gatehouse/install.sh /path/to/your/project --force   # overwrites
+./gatehouse/install.sh /path/to/your/project --profile flutter-app   # a ready-made set instead of the template
 ```
 
 Then:
