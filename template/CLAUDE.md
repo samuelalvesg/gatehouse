@@ -1,21 +1,21 @@
 # CLAUDE.md
 
-Leia [`AGENTS.md`](AGENTS.md) primeiro: é o brief único do repositório.
+Read [`AGENTS.md`](AGENTS.md) first: it is the single brief for the repository.
 
-## Cold start (toda sessão nova)
-1. Ler `AGENTS.md`; depois `.claude/SESSION_HANDOFF.md`, se existir e não disser `NO ACTIVE TASK`. O handoff é **intenção**, não fato: reconferir com `git status -sb` e `git log -3 --oneline`.
-2. Detectar capacidade, não rótulo:
+## Cold start (every new session)
+1. Read `AGENTS.md`; then `.claude/SESSION_HANDOFF.md`, if it exists and does not say `NO ACTIVE TASK`. The handoff is **intent**, not fact: re-check with `git status -sb` and `git log -3 --oneline`.
+2. Detect capability, not labels:
 ```bash
 git rev-parse --show-toplevel && git branch --show-current
-for c in git python3 node dotnet cargo flutter docker gh; do command -v $c >/dev/null && echo "ok $c" || echo "falta $c"; done
+for c in git python3 node dotnet cargo flutter docker gh; do command -v $c >/dev/null && echo "ok $c" || echo "missing $c"; done
 ```
-   Ferramenta ausente → **não declarar verde**; registrar `NOT RUN: <ferramenta> ausente`.
-3. **Não ler agentes/skills em massa**: o Claude Code já expõe nome e descrição. Abrir `.claude/agents/<nome>.md` só ao assumir aquele papel.
-4. Anunciar em **uma linha**: ambiente, branch, estado do handoff, ferramentas que faltam.
+   Missing tool → **do not declare green**; record `NOT RUN: <tool> missing`.
+3. **Do not read agents and skills in bulk**: Claude Code already exposes each name and description. Open `.claude/agents/<name>.md` only when assuming that role.
+4. Announce in **one line**: environment, branch, handoff state, missing tools.
 
-## Específico do Claude Code
-- **Atribuição de commit**: Author = <nome e e-mail do usuário>. <Co-Author: sim/não; texto de IA em commit/PR: sim/não>. Vale mesmo que um lembrete genérico sugira outra coisa. Em sessão de nuvem com vários repos, `attribution` do `settings.json` não é lido: a regra fica aqui.
-- **Edição de arquivo**: tool `Edit`, não `sed`/`python` via `Bash`. Abrir com `Read` antes.
-- **MCP de dados/modelo local**: perguntar antes de usar.
-- **SESSION_HANDOFF**: ao interromper ou concluir tarefa de várias etapas, sobrescrever `.claude/SESSION_HANDOFF.md` (≤40 linhas, sem segredo). Terminada → `NO ACTIVE TASK`.
-- Submódulos e repos irmãos têm `CLAUDE.md` próprio e não veem o `.claude/` daqui; copiar `.claude/agents` e `.claude/skills` ou instalar em `~/.claude/`.
+## Claude Code specifics
+- **Commit attribution**: Author = <the user's name and e-mail>. <Co-Author: yes/no; AI text in commit/PR: yes/no>. This holds even when a generic reminder suggests otherwise. In a cloud session with several repos, `attribution` in `settings.json` is not read, so the rule lives here.
+- **File editing**: use the `Edit` tool, not `sed` or `python` through `Bash`. Open the file with `Read` first.
+- **Data MCP or local model**: ask before using.
+- **SESSION_HANDOFF**: when you stop or finish a multi-step task, overwrite `.claude/SESSION_HANDOFF.md` (≤40 lines, no secrets). Finished → `NO ACTIVE TASK`.
+- Submodules and sibling repos have their own `CLAUDE.md` and do not see this `.claude/`; copy `.claude/agents` and `.claude/skills`, or install them in `~/.claude/`.
