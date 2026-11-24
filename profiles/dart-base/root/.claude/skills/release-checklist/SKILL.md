@@ -20,3 +20,11 @@ description: Verifies pre-release and deployment readiness, ensuring CI test pas
 
 # Output Format
 `# | Item | Status (PASS / BLOCKED) | Verification Command / Evidence`
+
+# Rollback triggers
+- Conditions that start a rollback without debate: error rate or latency above the agreed threshold, a failed health check, data integrity errors, a security finding.
+- The rollback path for each change: previous artifact, feature flag to turn off, and whether a migration needs a reverse step or only a forward fix.
+
+# Post-deploy
+- Watch the agreed signals for the first period after the release (errors, latency, the business metric that matters). Confirm the new version is the one serving traffic.
+- Record the outcome and close the release item in the backlog, or open a follow-up for anything still open.

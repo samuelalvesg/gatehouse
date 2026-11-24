@@ -20,3 +20,9 @@ Verify codebase facts using active grep/read operations; otherwise state "not ve
 
 # Output
 Ready-to-commit ADR file and index line update. Status `Proposed` until confirmed by user.
+
+# Options considered
+- At least two real options, each with the trade-off it gives up, and why it was rejected.
+
+# Consequences
+- What becomes easier, what becomes harder, and the follow-up actions with owners.

@@ -18,3 +18,9 @@ ROOT CAUSE: <file:line + technical explanation>
 PROPOSED FIX: <minimal diff explanation>
 REGRESSION TEST: <new test path>
 ```
+
+# Reproduction
+- Smallest steps that show the failure every time; record the environment and the version.
+
+# Prevention
+- For the root cause: the test that would have caught it, the guard that stops the class of error, and the owner. Facts before fixes; a fix without a root cause is a symptom patch.
