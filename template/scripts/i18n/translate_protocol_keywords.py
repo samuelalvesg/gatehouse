@@ -45,13 +45,19 @@ def leftovers(text: str, mapping: dict[str, str]) -> list[str]:
     return [old for old in mapping if pattern_for(old).search(text)]
 
 
+SKIP_PARTS = {"worktrees", "fixtures", ".git", "node_modules"}
+
+
 def files(root: Path):
     seen = set()
     for glob in TARGETS:
         for p in sorted(root.glob(glob)):
-            if p.is_file() and p not in seen:
-                seen.add(p)
-                yield p
+            if not p.is_file() or p in seen:
+                continue
+            if set(p.relative_to(root).parts) & SKIP_PARTS:
+                continue
+            seen.add(p)
+            yield p
 
 
 def main(argv=None) -> int:

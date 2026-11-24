@@ -49,6 +49,17 @@ class TranslateTest(unittest.TestCase):
         finally:
             shutil.rmtree(root, ignore_errors=True)
 
+    def test_worktrees_and_fixtures_are_skipped(self):
+        root = Path(tempfile.mkdtemp())
+        try:
+            for folder in (".claude/worktrees/x/scripts/fixtures", "scripts/fixtures"):
+                (root / folder).mkdir(parents=True)
+                (root / folder / "f.md").write_text("RETORNO kept\n", encoding="utf-8")
+            self.assertEqual(tk.main(["--root", str(root), "--mapping", str(self.mapping(root)), "--apply"]), 0)
+            self.assertEqual((root / "scripts/fixtures/f.md").read_text(encoding="utf-8"), "RETORNO kept\n")
+        finally:
+            shutil.rmtree(root, ignore_errors=True)
+
     def mapping(self, root: Path) -> Path:
         path = root / "map.json"
         path.write_text(__import__("json").dumps(MAP), encoding="utf-8")
