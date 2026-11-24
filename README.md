@@ -22,9 +22,7 @@ Rules that apply to everyone:
 | Folder | Content |
 |---|---|
 | `template/` | What goes in your project root: `AGENTS.md`, `CLAUDE.md`, `.agents/` (9 agents, 25 skills, rules), symlinks for `.claude/` and `.cursor/`, settings, a session handoff file |
-| `projects/` | Text to paste into Claude Projects (instructions and starting memory) |
-| `environments/` | A setup script for a cloud environment, as a model |
-| `docs/` | Inventory of the original setup and the gaps found |
+| `docs/` | Notes from evaluating popular skills |
 | `install.sh` | Copies `template/` into a repository without overwriting |
 | `tests/validate.sh` | Checks agent and skill frontmatter and that `install.sh` is idempotent |
 
@@ -43,11 +41,10 @@ Then:
 1. Fill in the `<placeholders>` in `AGENTS.md` and `CLAUDE.md`: project, repository map, commit attribution, language.
 2. Copy `.agents/agents/developer.md` once per stack (`backend-dev.md`, `frontend-dev.md`) and fill in "Stack".
 3. Adapt the skills that name a stack (`owasp-sanitizer`, `test-strategy`, `a11y-audit`, `graph-mapping` use .NET, Flutter and Rust examples).
-4. Paste `projects/INSTRUCOES_CLAUDE_PROJECTS.md` and `projects/MEMORIA_INICIAL.md` into your project on claude.ai.
 
 ## Good to know
 
-- `AGENTS.md`, `CLAUDE.md`, the `projects/` texts and parts of `docs/` are in Brazilian Portuguese; the agent files are in English. Translate what you need.
+- `AGENTS.md` and `CLAUDE.md` are in Brazilian Portuguese; the agent files are in English. Translate what you need.
 - Several skills derive from Apache-2.0 plugins; see `template/.claude/NOTICE.md`.
 
 ## Plugins declared in the repo
@@ -71,7 +68,7 @@ in `.claude/settings.json` (the template already ships `code-review`):
 
 Pick by stack: .NET → `csharp-lsp` (needs `csharp-ls`); Rust →
 `rust-analyzer-lsp` (needs `rust-analyzer`); Flutter → `dart-flutter`.
-The `environments/` setup installs both servers. A plugin with no public
+A plugin with no public
 `marketplace.json` (for example `backend-design`) can't be declared. It stays
 on the account, and the agents mention it as "use if loaded". Copy a plugin's
 skill into the repo only when you are going to adapt it, and record the origin
@@ -81,23 +78,9 @@ declared.
 The `verify-delivery` skill is the repo's delivery gate: fill in its commands
 (the same ones as CI). `@developer`, `@qa-engineer` and `@reviewer` refer to it.
 
-## example repository profiles
-
-`profiles/` holds the exact configuration of the example, example-backend,
-example-frontend and example-edge repos (agents with SOUL, skills, rules, MCP,
-plugins). This repo is the source, and the other repos get a copy with
-`./install.sh <repo> --profile <name> --force`. `--check` tells you whether a
-repo's copy still matches. Details in [`profiles/README.md`](profiles/README.md).
-
 ## Left out of the template on purpose
 
-These are tied to example: `rust-dev`, the stack-specific `backend-dev` and
-`frontend-dev` (in the template they are copies of `developer`), local-model
-(Ollama) profiles, the skills `local-llama-bridge`, `auto-doc-updater`,
-`diagram-generator`, `query-performance-tuner`, `telemetry-tracing` and
-`ux-copy-ptbr`, and `.agents/` (its own MCP setup). They live in `profiles/`,
-not in `template/`.
-
-## License
-
-Apache-2.0
+These are tied to the project the template came from: `rust-dev`, the stack-specific `backend-dev` and
+`frontend-dev` (in the template they are copies of `developer`), local-model (Ollama) profiles, the skills
+`local-llama-bridge`, `auto-doc-updater`, `diagram-generator`, `query-performance-tuner`, `telemetry-tracing`
+and `ux-copy-ptbr`, and the project's own MCP setup.
