@@ -68,6 +68,18 @@ class ScanTest(unittest.TestCase):
         self.put("api/proxy.ts", "const r = await fetch(req.query.url);\n")
         self.assertEqual(status(scan.scan(self.root), "I1"), "FAIL")
 
+    def test_login_route_without_rate_limit_is_flagged(self):
+        self.put("controllers/AuthController.cs", '[HttpPost("login")]\npublic Task Login() { }\n')
+        self.assertEqual(status(scan.scan(self.root), "G1"), "FAIL")
+        self.put("controllers/AuthController.cs", '[EnableRateLimiting("Login")]\n[HttpPost("login")]\npublic Task Login() { }\n')
+        self.assertEqual(status(scan.scan(self.root), "G1"), "PASS")
+
+    def test_hashing_without_concurrency_cap_is_flagged(self):
+        self.put("auth/hasher.cs", "var h = new Argon2id(bytes).GetBytes(32);\n")
+        self.assertEqual(status(scan.scan(self.root), "G4"), "FAIL")
+        self.put("auth/hasher.cs", "var gate = new SemaphoreSlim(4);\nvar h = new Argon2id(bytes).GetBytes(32);\n")
+        self.assertEqual(status(scan.scan(self.root), "G4"), "PASS")
+
     def test_cookie_without_httponly_fails(self):
         self.put("auth/session.ts", "res.cookie('s', token, { secure: true });\n")
         self.assertEqual(status(scan.scan(self.root), "F2"), "FAIL")
