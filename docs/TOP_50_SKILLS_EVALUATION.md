@@ -57,7 +57,7 @@ All skills are standardized in English, following the open `SKILL.md` specificat
 
 ---
 
-## 2. Incorporation Strategy for the claude-agents Template
+## 2. Incorporation Strategy for the Gatehouse Template
 
 1. **Pre-installed Core (Skills 1–27)**:
    Already installed and available in `template/.agents/skills/`. They cover the complete development lifecycle: requirements analysis, architecture, security, testing, humanized writing, token efficiency, and document parsing.

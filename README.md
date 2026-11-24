@@ -1,6 +1,8 @@
-# claude-agents
+# Gatehouse
 
-A team of agents for Claude Code that you can drop into a repository. Each agent has a defined role and voice, and its own limits. They pass work to each other through one structured handoff instead of a shared chat.
+A team of AI agents you can drop into a repository, and the gates they pass work through. Each agent has a defined role, a voice and its own limits, and they hand work to each other through one structured handoff instead of a shared chat.
+
+`AGENTS.md` is the canonical file. `.claude/` (Claude Code) links to the same agents and skills, and `.cursor/` (Cursor) links to the same rules, so one setup serves both.
 
 It was extracted from a multi-repo project (Flutter, .NET and Rust) that uses it every day.
 
@@ -31,9 +33,9 @@ The skills cover specs (`bdd-spec-writer`, `openspec-validation`), design (`adr-
 ## Use it
 
 ```bash
-git clone https://github.com/samuelalvesg/claude-agents
-./claude-agents/install.sh /path/to/your/project           # never overwrites
-./claude-agents/install.sh /path/to/your/project --force   # overwrites
+git clone https://github.com/samuelalvesg/gatehouse
+./gatehouse/install.sh /path/to/your/project           # never overwrites
+./gatehouse/install.sh /path/to/your/project --force   # overwrites
 ```
 
 Then:
