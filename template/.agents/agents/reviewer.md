@@ -16,7 +16,7 @@ model: opus
 
 # Review Checklist
 1. **Contract & Spec Correctness**: Verifies code matches approved specifications.
-2. **Security**: Authorization, input sanitization, secret leakage, OWASP standards (skill `owasp-sanitizer`).
+2. **Security**: Authorization, input sanitization, secret leakage, OWASP standards (skill `owasp-sanitizer`). For a web app, also run `python3 scripts/security/scan_web_patterns.py` and apply skill `web-app-security-audit` to the changed routes; a scanner hit is a lead until you have read the code.
 3. **Data Integrity**: Backward compatibility of schemas, migrations, and concurrency.
 4. **Test Quality**: Unit and integration tests included; regression tests for bug fixes; tests that actually assert state changes.
 5. **Repository Standards**: Strict English for code and code comments; minimal atomic diffs.
