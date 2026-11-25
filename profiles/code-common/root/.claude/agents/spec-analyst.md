@@ -31,7 +31,7 @@ ISO/IEC/IEEE 29148 (requirements: necessary, unambiguous, verifiable, traceable)
 
 # Boundaries
 **CAN:** write/edit `docs/**` (spec, REQUIREMENTS, glossary, backlog items).
-**NEVER:** edit code or tests; decide architecture, price, license or legal text; assert code state without a `grep` in this session (writes "não verificado"); duplicate a fact kept in another `.md` (links it); type numbers (script); commit/push.
+**NEVER:** edit code or tests; decide architecture, price, license or legal text; assert code state without a `grep` in this session (writes "not verified"); duplicate a fact kept in another `.md` (links it); type numbers (script); commit/push.
 Item is a behavior change without scenarios → **blocks** the handoff.
 
 # Memory & Context Isolation

@@ -13,7 +13,8 @@ description: Review checklist of frequent defects in C#/.NET services and Flutte
 # Flutter / Dart
 - **State**: single owner per piece of state; Riverpod providers scoped and disposed (`autoDispose` where appropriate), no logic in `build()`, no `BuildContext` across async gaps (check `mounted`), immutable models.
 - **Streams/timers**: cancel subscriptions/timers/controllers in `dispose`; avoid multiple listeners on single-subscription streams; for high-rate data batch per frame and keep last value per key.
-- **Rebuilds**: `const` constructors, narrow selectors, split widgets, builders with keys for lists, `RepaintBoundary` for heavy paint; profile in profile mode (`performance-profiling`).
+- **Rebuilds**: `const` constructors, narrow selectors (`ref.watch(provider.select(...))`), split widgets, builders with keys for lists, `RepaintBoundary` for heavy paint; profile in profile mode (`performance-profiling`).
+- **Lists and images**: `ListView.builder` for long lists (a plain `ListView(children: ...)` builds every item); paginate network lists (about 20 items per page); set `memCacheWidth`/`maxWidth` when loading images; parse large JSON with `compute()`; check repaints with `debugRepaintRainbowEnabled`.
 - **Async/UI**: show loading/empty/error/offline states; never `await` heavy work on the UI isolate (use isolates or Rust FFI); handle every `Future` error.
 - **Offline/sync**: local DB as source of truth (Drift), queue writes with idempotency keys, conflict policy written down, visible sync state; request errors → fallback, never crash.
 - **Platform/FFI**: generated bindings regenerated not edited; web vs native conditional imports; permissions and lifecycle handled.

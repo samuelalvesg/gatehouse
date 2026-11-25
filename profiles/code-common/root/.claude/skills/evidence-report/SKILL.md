@@ -30,4 +30,4 @@ APPROVED | APPROVED WITH NOTES | REJECTED
 ```
 
 # Additional guidance
-Evidence levels: OBSERVADO / DERIVADO / INFERIDO / DESCONHECIDO. Finding classes: `DEFEITO REPRODUZIDO` (steps + output; only this one counts as a bug) · `LIMITAÇÃO SUPORTADA` · `OPORTUNIDADE DE DESIGN` · `HIPÓTESE` · `EVIDÊNCIA INDISPONÍVEL`. Minimum fields: `ACHADO | NÍVEL | EVIDÊNCIA (file:line or command+output) | COBERTURA | LIMITE/NÃO VERIFICADO | AÇÃO`. Missing data: write `SEM DADO SUFICIENTE: <what is missing>` and ask. Group duplicates by root cause. Never repeat a fact from another `.md` without re-checking (`AGENTS.md` documentation rule).
+Evidence levels: OBSERVED / DERIVED / INFERRED / UNKNOWN. Finding classes: `REPRODUCED DEFECT` (steps + output; only this one counts as a bug) · `SUPPORTED LIMITATION` · `DESIGN OPPORTUNITY` · `HYPOTHESIS` · `EVIDENCE UNAVAILABLE`. Minimum fields: `FINDING | LEVEL | EVIDENCE (file:line or command+output) | COVERAGE | LIMITE/NOT VERIFIED | ACTION`. Missing data: write `INSUFFICIENT DATA: <what is missing>` and ask. Group duplicates by root cause. Never repeat a fact from another `.md` without re-checking (`AGENTS.md` documentation rule).

@@ -30,20 +30,20 @@ Pipeline: `@spec-analyst` → `@architect` → `@developer` (one copy per stack)
 By trigger: `@secops-engineer` (security, dependencies, release), `@sre-database` (migration, query, telemetry), `@refactoring-architect` (debt, separate diff), `@copywriter-humanizer` (writing and humanized review of documents, PRs, issues and UI text).
 
 - **One owner at a time.** Only `@architect` and `@spec-analyst` change spec and contract; only developers change production code; only `@qa-engineer` changes acceptance tests; `@reviewer` and `@secops-engineer` only read.
-- **Handoff** is the only channel between agents (≤25 lines). Protocol keywords and fields stay in Portuguese, because agents parse them:
+- **Handoff** is the only channel between agents (≤25 lines). Protocol keywords and fields are in English, because agents parse them:
 ```
 HANDOFF @de → @para
 ITEM: <caminho do item de backlog>
-ESCOPO: <arquivos/módulos que PODEM mudar>
-FORA: <o que NÃO mexer>
-CONTRATO: <rota/DTO/evento, antes → depois>
-CENÁRIOS: <ids da spec que o QA vai testar>
-RISCOS: <migration? contrato? multi-tenant?>
-ORDEM: <quem primeiro>
-AMBIENTE: <shell? ferramentas que faltam>
+SCOPE: <arquivos/módulos que PODEM mudar>
+OUT: <o que NÃO mexer>
+CONTRACT: <rota/DTO/evento, antes → depois>
+SCENARIOS: <ids da spec que o QA vai testar>
+RISKS: <migration? contrato? multi-tenant?>
+ORDER: <quem primeiro>
+ENVIRONMENT: <shell? ferramentas que faltam>
 ```
-- **Return** (keywords in Portuguese, as agents parse them): `RETORNO @de → @para | STATUS: OK|BLOQUEADO|DIVERGENTE` + FEITO / NÃO EXECUTADO / PENDENTE. Outside ESCOPO or a divergent spec → `BLOQUEADO` to `@architect`; never expand the scope alone.
-- In Claude Code: the `Agent` tool with `subagent_type: <name>` and the literal handoff as the prompt (the subagent does not inherit the conversation). Without subagents: open `.claude/agents/<name>.md` and switch role by writing `[PAPEL: @name]`.
+- **Return** (keywords in English, as agents parse them): `RETURN @de → @para | STATUS: OK|BLOCKED|DIVERGENT` + DONE / NOT RUN / PENDING. Outside SCOPE or a divergent spec → `BLOCKED` to `@architect`; never expand the scope alone.
+- In Claude Code: the `Agent` tool with `subagent_type: <name>` and the literal handoff as the prompt (the subagent does not inherit the conversation). Without subagents: open `.claude/agents/<name>.md` and switch role by writing `[ROLE: @name]`.
 
 **Hard limits (no agent does these alone):** merge or a PR marked ready without green tests; touching credentials, `.env` or production; deleting what it did not create; sending data to an external service; weakening, skipping or deleting a test to make it pass.
 

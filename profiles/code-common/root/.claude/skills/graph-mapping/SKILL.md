@@ -36,4 +36,4 @@ NOT VERIFIED: ...
 - Prefer `graphify` if on PATH or `graphify-out/` exists (`command -v graphify`); never install it unasked.
 - C#: `grep -rn "TypeName" <backend> --include=*.cs` (usages, `: IInterface`, DI registrations `AddScoped/AddTransient`), `Controllers/` for routes, CAP/SignalR handlers for events. Dart: `grep -rn "import .*file"`, `dart analyze` of the touched package, owner in `<frontend>/packages/`. Rust: `grep` in `rust_crates/`, `cargo tree -i <crate>`. Docs: `grep -rn "<term>" docs/`.
 - Classify edges: direct caller · transitive caller (max 2 hops) · test · config/DI · external contract (app, edge gateway, webhook). Mark boundary crossings: module, tenant, backend↔frontend, submodule.
-- Output (≤30 lines): `ALVO / DIRETOS / TRANSITIVOS / TESTES QUE COBREM / CONTRATO EXTERNO / RISCO / NÃO VERIFICADO`. Dynamic dependencies (reflection, convention DI) not covered → "not verified". Stop when the radius closes.
+- Output (≤30 lines): `TARGET / DIRECT / TRANSITIVE / COVERING TESTS / CONTRACT EXTERNO / RISK / NOT VERIFIED`. Dynamic dependencies (reflection, convention DI) not covered → "not verified". Stop when the radius closes.
