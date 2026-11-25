@@ -17,7 +17,7 @@ A core package (for example `pillar_core`) and an API package (for example `symm
 1. **Pure contract → core package.** Code with no I/O and no dependency on the API package goes into `<core>/lib/src/<domain>/`: a narrow contract (one or two providers, pure types, no network, no storage). Keep the real implementation outside the core and inject it with an override (`ProviderContainer` override or `ProviderScope.overrides`).
 2. **Real I/O or API dependency → leaf package.** Code that calls HTTP, native storage or FFI, or that depends on the API package, becomes a leaf package. It does not go into the core package.
 3. **Check for an existing home first.** Before creating a package, look for a leaf package that already covers the same business domain. Add the code there. Split a domain across several small packages only when the domain really has no home yet.
-4. **Native shell (casca).** When a native library (for example a Rust core through `flutter_rust_bridge`) must be embedded, keep a thin package that only exposes the binding. The business logic stays in the library, which the shell calls and does not reimplement.
+4. **Native shell (thin FFI wrapper).** When a native library (for example a Rust core through `flutter_rust_bridge`) must be embedded, keep a thin package that only exposes the binding. The business logic stays in the library, which the shell calls and does not reimplement.
 5. **Adapter for an external SDK.** A package that wraps a third-party SDK implements a contract from another package. It is the only package allowed to import that SDK. Removing the integration means deleting that package.
 
 ## Checklist for every new feature or split
