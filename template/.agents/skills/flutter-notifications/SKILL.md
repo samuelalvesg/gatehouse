@@ -1,44 +1,47 @@
 ---
 name: flutter-notifications
-description: Integrate push and local notifications using FCM and flutter_local_notifications in Flutter. Use for notification delivery or presentation; badge-only UI and notification-service tests are out of scope here.
+description: Deliver and show push and local notifications in Flutter with Firebase Messaging and flutter_local_notifications: channels, foreground and background handling, tap payloads with routes, permission requests, and web notifications. Use when changing how a notification is received, shown or opened.
 metadata:
   triggers:
     files:
-    - '**/*notification*.dart'
-    - '**/main.dart'
+      - '**/*notification*.dart'
+      - '**/main.dart'
     keywords:
-    - FirebaseMessaging
-    - FlutterLocalNotificationsPlugin
-    - FCM
-    - notification
-    - push
+      - FirebaseMessaging
+      - FlutterLocalNotificationsPlugin
+      - AndroidNotificationChannel
+      - onMessageOpenedApp
+      - getInitialMessage
+      - push
 ---
+
 # Flutter Notifications
 
 ## **Priority: P1 (HIGH)**
 
-
 ## Implementation Workflow
 
-1. **Set up packages** — Add `firebase_messaging` (Push) and `flutter_local_notifications` (Local/Foreground).
-2. **Request permission** — Prime users with custom dialog explaining benefits _before_ system prompt.
-3. **Handle all lifecycle states** — Implement handlers for Foreground, Background, and Terminated states.
-4. **Validate payloads** — Strictly validate notification data before navigating to screens.
-5. **Clear badges** — Manually clear iOS app badges when visiting relevant screens.
-
-### Lifecycle Handlers Example
-
-See [implementation examples](references/implementation.md) for foreground, background, and terminated state notification handling.
-
-[Implementation Details](references/implementation.md)
+1. **One service owns the wiring.** A single notification service sets up the local plugin, the channels, the FCM listeners and the permission request. Features call it; they do not listen to FCM themselves.
+2. **Channels are named and explicit.** Each kind of notification has its own channel with its own importance. Create all channels once, at startup.
+3. **Handle the three app states.** Foreground (`onMessage`: show a local notification), background (`onMessageOpenedApp`: navigate) and terminated (`getInitialMessage`: navigate after the first frame).
+4. **Payloads carry a route.** Encode the payload as a string that includes the target route and the identifiers the screen needs. Decode it in one function and validate it before navigating.
+5. **Permission is requested in context.** Explain the benefit in the app first, then call the system request. Do not request it at cold start without context.
+6. **Web is a separate path.** On web, use the browser Notification API behind a conditional import. Do not call native plugins on web.
+7. **Badges.** Clear the iOS badge when the user opens the relevant screen, not on every launch.
 
 ## Anti-Patterns
 
-- **No Early Permission Popups**: Show primer dialog explaining value first
-- **No Missing `getInitialMessage()`**: Always handle "open from terminated" startup state
-- **No Uncleared Badges**: Manually clear notification badges upon related screen visits
-- **No Unvalidated Payloads**: Validate all JSON data before navigating on click
+- **No FCM listeners in features**: they run twice and navigate twice.
+- **No channel created per notification**.
+- **No navigation from a payload without validation**.
+- **No permission request on the first frame**.
+- **No native plugin calls on web**.
+
+## Reference & Examples
+
+See [references/implementation.md](references/implementation.md) for the lifecycle handlers and the service skeleton.
 
 ## Related Topics
 
-flutter-navigation | mobile-ux-core | firebase/fcm
+- Navigation target: `flutter-go-router-navigation`.
+- Payload and personal data in logs: `flutter-security`.

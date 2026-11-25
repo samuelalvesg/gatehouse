@@ -1,113 +1,50 @@
-# Flutter Notification Implementation
+# Notification Service Skeleton
 
-## Lifecycle Handlers (Quick Reference)
+Versions to pin in the app's `pubspec.yaml` are the ones the project already uses; check the lock file before changing them.
 
-```dart
-// Foreground
-FirebaseMessaging.onMessage.listen((message) {
-  _showLocalNotification(message);
-});
-
-// Background (app open but not in foreground)
-FirebaseMessaging.onMessageOpenedApp.listen((message) {
-  _handleNavigation(message.data);
-});
-
-// Terminated (cold start from notification tap)
-final initialMessage = await FirebaseMessaging.instance.getInitialMessage();
-if (initialMessage != null) _handleNavigation(initialMessage.data);
-```
-
-## 1. Setup Dependencies
-
-```yaml
-dependencies:
-  firebase_messaging: ^14.7.0
-  flutter_local_notifications: ^16.3.0
-```
-
-## 2. Initialization & Permission
+## Lifecycle Handlers
 
 ```dart
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+// Foreground: FCM does not show a system notification, so show a local one.
+FirebaseMessaging.onMessage.listen(showLocalNotification);
 
-  final messaging = FirebaseMessaging.instance;
-  // Request permission
-  await messaging.requestPermission(
-    alert: true, badge: true, sound: true,
-  );
+// Background: the user tapped a notification while the app was in the background.
+FirebaseMessaging.onMessageOpenedApp.listen(openFromMessage);
 
-  final token = await messaging.getToken();
-  runApp(MyApp());
+// Terminated: the app was launched by a tap.
+final initial = await FirebaseMessaging.instance.getInitialMessage();
+if (initial != null) {
+  WidgetsBinding.instance.addPostFrameCallback((_) => openFromMessage(initial));
 }
 ```
 
-## 3. Notification Handling Service
+## Service Skeleton
 
 ```dart
 class NotificationService {
-  final FirebaseMessaging _messaging = FirebaseMessaging.instance;
-  final FlutterLocalNotificationsPlugin _local = FlutterLocalNotificationsPlugin();
+  NotificationService(this._fcm, this._local);
 
-  Future<void> initialize() async {
-    // 1. Init Local Notifications
+  final FirebaseMessaging _fcm;
+  final FlutterLocalNotificationsPlugin _local;
+
+  Future<void> start({required void Function(String route) onOpenRoute}) async {
     await _local.initialize(
-      InitializationSettings(
+      const InitializationSettings(
         android: AndroidInitializationSettings('@mipmap/ic_launcher'),
         iOS: DarwinInitializationSettings(),
       ),
-      onDidReceiveNotificationResponse: _onTap, // Foreground tap
+      onDidReceiveNotificationResponse: (response) =>
+          onOpenRoute(decodeRoute(response.payload)),
     );
-
-    // 2. Foreground Stream
-    FirebaseMessaging.onMessage.listen(_showLocal);
-
-    // 3. Background/Terminated -> Opened
-    FirebaseMessaging.onMessageOpenedApp.listen(_handleTap);
-
-    // 4. Terminated -> Launched
-    final initialMsg = await _messaging.getInitialMessage();
-    if (initialMsg != null) _handleTap(initialMsg);
-  }
-
-  void _showLocal(RemoteMessage msg) {
-    _local.show(
-      msg.hashCode,
-      msg.notification?.title,
-      msg.notification?.body,
-      NotificationDetails(
-        android: AndroidNotificationDetails('default', 'Default',
-            importance: Importance.max, priority: Priority.high),
-        iOS: DarwinNotificationDetails(),
-      ),
-      payload: jsonEncode(msg.data),
-    );
-  }
-
-  void _handleTap(RemoteMessage msg) {
-    // Navigate based on payload
+    for (final channel in allNotificationChannels) {
+      await _local
+          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+          ?.createNotificationChannel(channel.channel);
+    }
+    FirebaseMessaging.onMessage.listen(showLocalNotification);
+    FirebaseMessaging.onMessageOpenedApp.listen((m) => onOpenRoute(decodeRoute(m.data)));
   }
 }
 ```
 
-## 4. Permission Priming (Recommended)
-
-Explain benefits before system dialog:
-
-```dart
-Future<void> requestPermission(BuildContext context) async {
-  final userAgreed = await showDialog<bool>(...); // Show explanation dialog
-  if (userAgreed == true) {
-    await FirebaseMessaging.instance.requestPermission();
-  }
-}
-```
-
-## 5. iOS Badge Management
-
-```dart
-_local.resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
-    ?.setApplicationIconBadgeNumber(0); // Clear badge
-```
+The channels, the payload codec and the web path live in the project's notification package. Copy their names from there, not from this skeleton.
