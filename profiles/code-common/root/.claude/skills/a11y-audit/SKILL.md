@@ -18,6 +18,22 @@ description: Accessibility audit (WCAG 2.1/2.2 AA) for Flutter/Web screens. Use 
 # Output (<= 20 lines)
 `# | issue | criterion | severity (critical/major/minor) | remediation`. For untested items in screen readers: note "not verified".
 
+# WCAG 2.1 AA quick reference
+- Perceivable: text alternatives; captions; contrast at least 4.5:1 for text and 3:1 for large text and UI components; content usable without colour alone.
+- Operable: every function reachable by keyboard; no keyboard trap; enough time; no content that flashes more than three times per second.
+- Understandable: readable language; predictable navigation; clear error messages with a suggested fix.
+- Robust: valid, named controls with a role and state exposed to assistive technology.
+
+# Testing approach
+- Check contrast with a tool and by eye; walk the screen with the keyboard only; read it with a screen reader once; check zoom at 200%.
+- Report each failure with the criterion number, the element, and the fix.
+
+# Common issues
+- Images without text alternatives; icon buttons without a name; low contrast on text and on focus rings; forms without labels or error text; focus lost after a dialog closes.
+
+# Priority fixes
+- Order findings by who they block: anything that stops a keyboard or screen reader user from finishing a task comes first.
+
 # Additional guidance
 - Touch target: WCAG 2.5.8 (AA, 2.2) asks ≥ 24×24 px; the practical platform reference is **48 dp (Android) / 44 pt (iOS)**. 2.5.5 (44 px) is level **AAA**, not AA.
 - Motion: the project already uses `prefersReducedMotion`; respect it.

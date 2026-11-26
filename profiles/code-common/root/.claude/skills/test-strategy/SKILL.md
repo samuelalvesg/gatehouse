@@ -22,7 +22,17 @@ Test plan with prioritized test cases, expected inputs/outputs, and target file 
 
 # Additional guidance
 - Repo rule: every change brings **unit + integration**; a bug brings a **regression** test; reuse existing helpers.
-- Layers: domain rule/service → xUnit (mock at the edge); route/contract → HTTP integration (`WebApplicationFactory`: happy, 4xx, authz/tenant); persistence/tenant/migration → `[DatabaseFact]` + Testcontainers with ≥1 pre-existing row; Flutter widget/state → `flutter test` with the 5 states (loading/empty/error/offline/ok); Rust → `#[cfg(test)]` + `tests/` (invariant + I/O error); app opens/native code → `integration_test` + `flutter drive` (web, Android) or `flutter test -d linux` (cold start + Rust core responds + 1 check per risky plugin).
-- Find existing tests: `grep -rn "<symbol>" <test dirs>`. Test name = scenario id + English description. Backend requires "Skipped: 0".
-- Known Flutter pitfalls: tests that look for **screen text** age (a renamed button fails a good baseline): prefer a key or widget type. Web: `flutter drive` needs the `chromedriver` of the same Chrome; in a container, `--no-sandbox`. Tests using native Rust need the compiled library (the Linux build produces it); without it `setUpAll` fails on the native library — environmental, not a regression. Rust on web: after rebuilding `web/pkg`, `wasm-opt` must be **117** (apt's 108 broke the `__wbindgen_externrefs` export); check the export and run the minimal core-init test in Chrome. A test that only passes proves nothing: **prove by mutation** (restore the old code and watch it fail); security guards too.
+- Layers: domain rule/service → unit test (mock at the edge); route/contract → HTTP integration test; persistence/tenant/migration → database test against a real database with at least one pre-existing row; UI state → widget test covering loading, empty, error, offline and ok; native code or app launch → integration test on a real device or desktop target.
+- Find existing tests: `grep -rn "<symbol>" <test dirs>`. Test name = scenario id + English description. No skipped tests are allowed.
+- Flutter mocks: use `mocktail`; never `any()` (use typed matchers); shared mocks live in `test/shared/`, with no local copies. Test names: `Method_Scenario_ExpectedBehavior`. No `Future.delayed` sleeps: use `pumpAndSettle()` or a condition.
 - Output ≤15 lines: `SCENARIO | LAYER | TEST (existe/falta) | RISK`.
+
+# Project rules
+- Every change brings unit and integration tests; a bug fix brings a regression test.
+- Reuse existing test helpers. Before writing one, search the test folders for the symbol.
+- Name tests with the scenario and the expected behaviour, in the project's naming convention.
+
+# Known pitfalls
+- Tests that look for on-screen text break on renames: prefer keys or widget types.
+- A test that only passes proves nothing: prove it by mutation (restore the old code and watch it fail). Do the same for security guards.
+- Failures caused by the environment (missing native libraries, missing browser driver, wrong tool version) are not regressions: record them as not verified, with the reason.
