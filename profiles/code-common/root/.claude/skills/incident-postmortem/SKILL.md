@@ -19,7 +19,24 @@ description: Generates blameless post-mortem analysis from incidents, regression
 # Output
 Standard markdown document saved under `docs/incidents/YYYY-MM-DD-incident-title.md`.
 
+# Communication
+- During the incident: one status update per interval, with current status, actions taken, next steps. Facts only; name the owner of each next step.
+- After: share the postmortem with everyone affected, and keep the timeline in UTC.
+
+# Review
+- What went well: detection, response and tools that worked, so they are kept.
+- What went poorly: detection gaps, slow handoffs, missing runbook steps.
+- Lessons learned: one sentence per lesson, each tied to an action item.
+
+# Severity
+- SEV1: service down for everyone. SEV2: a main function degraded. SEV3: a minor function, some users. SEV4: cosmetic.
+- Set the severity from impact, not from how alarming the report sounds; change it as facts arrive.
+
 # Additional guidance
 - Severity: SEV1 service down for all · SEV2 main function degraded · SEV3 minor function, some users · SEV4 cosmetic.
-- Triage: consult `the runbook` (rollback, reverse migration) **before** improvising. Production actions belong to the user; the agent proposes and documents. Revert > fix.
-- Postmortem is filed as an item in `docs/backlog/` (with `Status`, action and owner). Timeline in UTC, facts only. Detection: why the alarm did not catch it earlier (`telemetry-tracing`). Never send customer/Slack/e-mail communications; drafts only.
+- Postmortem is filed as an item in the project backlog (with `Status`, action and owner). Timeline in UTC, facts only. Detection: why the alarm did not catch it earlier (telemetry). Never send customer/Slack/e-mail communications; drafts only.
+
+# Project triage
+- Before improvising, read the project's runbook for rollback and reverse-migration steps.
+- Production actions belong to the operator; the agent proposes and documents them.
+- Under pressure, prefer reverting to the last known good state over a forward fix.

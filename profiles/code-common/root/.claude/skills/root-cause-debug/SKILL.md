@@ -19,8 +19,27 @@ PROPOSED FIX: <minimal diff explanation>
 REGRESSION TEST: <new test path>
 ```
 
+# Reproduction
+- Smallest steps that show the failure every time; record the environment and the version.
+
+# Prevention
+- For the root cause: the test that would have caught it, the guard that stops the class of error, and the owner. Facts before fixes; a fix without a root cause is a symptom patch.
+
 # Additional guidance
-- Stack shortcuts (examples): 500+ tests "passing" but skipped → Docker is down, check "Skipped". 400 at runtime with a clean build → EF compiled models: `dotnet ef dbcontext optimize`. Migration breaks with existing rows → primitive collection without `HasDefaultValueSql`. Mass 401 / photos → request fallback without crash.
 - Isolate: `git log -p --since=... -- <path>`, `git bisect` if a known-good commit exists; logs by `TraceId` (`telemetry-tracing`).
 - Fix order: regression test red first (`@qa-engineer`), then fix, then green. Once the cause is found, `grep` sibling consumers/adapters with the same pattern, **group by root cause**, and fix at the **producer** before patching consumers.
 - Limits: no production/project data/model MCP unless asked; never "fix" a test to pass; assert a cause only with evidence. Output: `SYMPTOM | REPRODUCTION | ROOT-CAUSE (evidência) | FIX | TEST DE REGRESSÃO | PREVENÇÃO`.
+
+# Common shortcuts
+- Tests reported as passing with many skipped: a dependency (container, service, emulator) is probably not running. Check the skipped count before trusting a green run.
+- A runtime error that persists after a clean build: suspect generated or cached artifacts (ORM compiled models, codegen output) and regenerate them.
+- A migration that fails on existing rows: check the defaults for new non-null columns and collections.
+- Failures that only show with old data or at scale: reproduce with realistic data.
+- Mass failures after an auth or network change: check the fallback path first. The app should degrade, not crash.
+
+# Limits
+- Do not use production tools unless asked.
+- Never change a test to make it pass.
+- State a cause only with evidence.
+
+Output: `SYMPTOM | REPRODUCTION | ROOT CAUSE (evidence) | FIX | REGRESSION TEST | PREVENTION`

@@ -2,11 +2,11 @@
 name: adr-writer
 description: Writes Architecture Decision Records (Nygard format) and diagrams systems with explicit requirements, alternatives, and trade-offs. Use for decisions on architecture, tech stack, or module boundaries.
 ---
-# Repository Convention (`docs/ADR/README.md`)
-File `NNNN-short-title.md` (next sequential number; check `ls docs/ADR`). Sections: **Status** (`Accepted|Proposed|Deprecated|Under review`), **Context**, **Decision**, **Consequences**. Accepted ADRs are immutable: write a new ADR and mark the previous one `Deprecated`. Update index in README.
+# Repository Convention
+Use the project's ADR folder (commonly `docs/adr/` or `docs/ADR/`). File `NNNN-short-title.md` (next sequential number; check the folder). Sections: **Status** (`Accepted|Proposed|Deprecated|Under review`), **Context**, **Decision**, **Consequences**. Accepted ADRs are immutable: write a new ADR and mark the previous one `Deprecated`. Update the index in the folder's README.
 
 # Before Writing
-Search `docs/ADR` and project backlog for prior decisions (do not relitigate accepted decisions). Identify functional/non-functional requirements (scale, latency, cost, team), constraints.
+Search the ADR folder and the project backlog for prior decisions (do not relitigate accepted decisions). Identify functional/non-functional requirements (scale, latency, cost, team), constraints.
 
 # Decision Structure
 1. Requirements and constraints (numbered).
@@ -21,7 +21,11 @@ Verify codebase facts using active grep/read operations; otherwise state "not ve
 # Output
 Ready-to-commit ADR file and index line update. Status `Proposed` until confirmed by user.
 
-# Additional guidance
-- File `NNNN-short-title.md` (next sequential number; check `ls docs/ADR`). Sections: **Status** (`Aceito|Proposto|Descontinuado|Sob revisão`), **Contexto**, **Decisão**, **Consequências**. An accepted ADR is **never edited**: write a new ADR and mark the old one `Descontinuado`. Update the README index.
-- Before writing, `grep` `docs/ADR` and `docs/backlog` for a prior decision (do not re-litigate what the user decided).
-- Include a Mermaid diagram with **packages and status** (✅🟡📝, ❓ open), user order #9. Price, license and legal: ask the user. Status stays `Proposto` until the user accepts.
+# Options considered
+- At least two real options, each with the trade-off it gives up, and why it was rejected.
+
+# Consequences
+- What becomes easier, what becomes harder, and the follow-up actions with owners.
+
+# Diagrams
+- Show packages and what is decided. Mark each part's state: ✅ exists, 🟡 partial, 📝 only recorded, ❓ open. Check the state in the code, or mark it "not verified".
