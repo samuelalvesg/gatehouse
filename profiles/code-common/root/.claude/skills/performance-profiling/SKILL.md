@@ -23,3 +23,6 @@ Benchmarking debug builds · measuring once · optimizing cold paths · caching 
 
 # Output (≤15 lines)
 `WORKLOAD | budget | baseline | change | after | method/tool | risk | guard`.
+
+## Related skills
+- `query-performance-tuner`: the database side of a slow path.

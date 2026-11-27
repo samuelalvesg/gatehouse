@@ -30,3 +30,8 @@ Batch writes, columnar/time-partitioned storage for telemetry, downsample for di
 
 # Output (≤15 lines)
 `PATH | data/quality/time handling | durability | protocol risks | command safety | tests/replay`.
+
+## Related skills
+- `fault-injection-testing`: replay and fault tests for the data path.
+- `performance-profiling`: measure the ingestion path.
+- `resilience-patterns`: store-and-forward and reconnect rules.

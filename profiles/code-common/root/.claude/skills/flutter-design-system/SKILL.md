@@ -22,5 +22,19 @@ description: Enforces Flutter Design System and OpenDesign standards, ThemeData/
    - Maintain minimum tap targets (>= 48 dp Android, >= 44 pt iOS).
    - Label custom icon buttons and interactive widgets with `Semantics(label:, button: true)`.
 
+## Workflow
+
+1. Read the theme and token files the project already has before writing a widget.
+2. Replace each hardcoded colour, text style or spacing with a token (rules 1 and 2).
+3. Check the layout at the breakpoints the project uses (mobile, tablet, desktop).
+4. Check motion against the reduced-motion preference (rule 4).
+5. Check tap targets and labels of interactive widgets (rule 5).
+
+## Cautions and limits
+
+- Do not create a new token system when the project already has one.
+- Do not change the global theme to fix one screen; add a local override with a stated reason.
+- Colour and size values in examples are placeholders; take the real values from the project.
+
 # Output
 Clean, testable Dart/Flutter widget code that strictly imports design tokens and avoids hardcoded visual styles.

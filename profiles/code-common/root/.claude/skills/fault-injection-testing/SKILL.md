@@ -21,9 +21,31 @@ Prove behavior under failure, not just correctness on valid input. A test that c
 # Rules
 - Every resilience claim (retry, breaker, dedupe, store-and-forward) has a test that **injects the failure** and asserts the outcome (no loss, no duplicate, bounded memory, recovers within N s).
 - Seeds are printed and reproducible; flaky = bug (in test or code), never "retry the CI".
-- Real databases/brokers for integration (Testcontainers); no mocking of what you are testing. Report `Skipped: 0`.
+- Real databases/brokers for integration (Testcontainers); no mocking of what you are testing. Report the number of skipped tests; for database tests it must be zero.
 - Chaos/DAST/fuzz only in local or ephemeral environments, never against production or third parties.
 - Real customer data never in fixtures.
 
+## Workflow
+
+1. Name the resilience claim to test (for example, "a retry does not duplicate a write").
+2. Pick the technique from the table by risk.
+3. Inject the failure at the boundary: fake transport, stopped container, failing handler.
+4. Confirm the test fails when the guard is removed (see Rules).
+5. Assert the outcome: no loss, no duplicate, bounded memory, recovery within N seconds.
+6. Record the seed and the failure injected in the output table.
+
+## Example
+
+Input (illustrative): `PaymentClient.Charge` retries after a timeout.
+
+Test: the fake handler times out on the first call and succeeds on the second. Assert one charge is recorded and the idempotency key is the same on both calls.
+
+| RISK | Technique | Test | Failure injected | Assertion | Tool |
+|---|---|---|---|---|---|
+| high | fault injection | `PaymentClientRetryTest` | timeout, then success | one record, same key | fake `HttpMessageHandler` |
+
 # Output (≤15 lines)
 `RISK | technique | test | failure injected | assertion | tool`.
+
+## Related skills
+- `test-mutation-audit`: check that the fault tests can actually fail.

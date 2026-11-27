@@ -33,8 +33,3 @@ Code/contract/architecture/command changed → the owning doc changes **in the s
 
 # Do not
 Rewrite a whole doc "in passing" · move a doc/item without running the path checker · copy a sentence from another `.md` without re-checking · history comments in docs ("it used to be…") · create a new doc when an existing one serves (reuse).
-
-# Project notes
-- Run the project's own doc checks before you finish a doc change (freshness, broken paths, generated-file checks). If a check cannot run, say so as "not verified".
-- Name an owner for each doc in the project's doc map, and route the change to that owner's agent.
-- Generated reports are never edited by hand: regenerate them with their script.

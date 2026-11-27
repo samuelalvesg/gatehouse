@@ -16,7 +16,7 @@ One table, then the fixes.
 
 - Status: `PASS`, `FAIL`, `N/A` (stack or feature absent), `NOT VERIFIED`. Severity for `FAIL`: `CRITICAL`, `HIGH`, `MEDIUM`, `LOW`; otherwise `-`.
 - After the table: file path and exact fix for every `CRITICAL` or `HIGH` `FAIL`.
-- Run the project's pattern scanner first, if it has one. Confirm each hit by reading the file; a scanner `PASS` is not a verdict.
+- Run the project's pattern scanner, if it has one first. Confirm each hit by reading the file; a scanner `PASS` is not a verdict.
 
 ## A. Secrets and environment
 - **A1** No service keys, private tokens or passwords in public variables (`NEXT_PUBLIC_*`, `VITE_*`, client bundles).
@@ -114,3 +114,7 @@ One table, then the fixes.
 ## Stack modules (only when the stack is present)
 - **Supabase or Firebase:** B1, B2 and C1 are checked against policy files and migrations, not only client code; Firebase: the security rules file.
 - **Next.js:** D1–D3 are checked separately in middleware, route handlers and server actions.
+
+## Related skills
+- `owasp-sanitizer`: code-level checks by OWASP category.
+- `security-audit`: deeper audit modes.

@@ -28,6 +28,15 @@ Read the files that define how the software is built, shipped and run. A mistake
 2. For each file, run the checklist. Mark items that do not apply as `N/A`.
 3. Where a tool is available (`hadolint`, `trivy config`, `checkov`, `kube-linter`), run it and cite its output. If it is not installed, mark the dependent items `NOT VERIFIED` and say which tool is missing.
 
+## Example
+
+Input (illustrative): the final stage of a Dockerfile has no `USER` line, and `ARG DB_PASSWORD` is used in a `RUN` step.
+
+| ID | Check | Status | Severity | Evidence | Fix |
+|---|---|---|---|---|---|
+| I1 | Non-root | FAIL | HIGH | `Dockerfile:14` (no `USER` in final stage) | add `USER app` after copying the binary |
+| I3 | Secrets in build | FAIL | CRITICAL | `Dockerfile:9` (`ARG DB_PASSWORD`) | pass the value through a build secret mount |
+
 ## Output
 
 One table, the same format as `web-app-security-audit`: ID, check, status (`PASS`, `FAIL`, `N/A`, `NOT VERIFIED`), severity, evidence (`file:line`), fix.

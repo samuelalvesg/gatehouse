@@ -40,5 +40,14 @@ Instrumentation must not double latency: compare p95 before/after on the hot pat
 - [ ] Overhead measured (or "not measured")
 - [ ] Test: log/metric emitted on the error path
 
+## Workflow
+
+1. Find the existing OpenTelemetry setup (`grep -rn "AddOpenTelemetry" .`) and reuse it.
+2. List the component's boundaries: inbound requests, consumers, external calls, saturation points.
+3. Add one log template, one RED metric or saturation gauge, and one span per boundary.
+4. Check for personal data and high-cardinality tags before merging.
+5. Measure overhead on the hot path against the budget; write "not measured" if there is no benchmark.
+6. Fill the checklist and the output table.
+
 # Output (≤15 lines)
 `COMPONENT | logs | metrics | spans | overhead | pending`.

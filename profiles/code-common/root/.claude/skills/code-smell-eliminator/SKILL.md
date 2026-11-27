@@ -16,6 +16,21 @@ description: Identifies and eliminates code smells, dead code, excessive complex
 - Feature Envy: Move behavior closer to the data owner.
 - Dead Code: Verify zero references via grep/AST before deleting.
 
+## Workflow
+
+1. Confirm the baseline: run the existing tests and record the result.
+2. Pick one smell from the catalog and find all its occurrences (grep).
+3. Apply one atomic refactoring and run the tests.
+4. Repeat for the next occurrence; commit each step separately when the user asks for commits.
+5. If a test fails, revert the last step and report it.
+6. Write one output line per smell.
+
+## Cautions and limits
+
+- Never change behaviour inside a refactoring step.
+- Do not delete code on a grep result alone when the build or AST can find references the grep missed.
+- Missing test coverage stops the work until a characterization test exists.
+
 # Output
 Summary of smells eliminated, before/after diff summary, and verification test status.
 

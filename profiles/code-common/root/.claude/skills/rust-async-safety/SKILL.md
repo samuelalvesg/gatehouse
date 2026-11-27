@@ -23,5 +23,17 @@ description: Review checklist for Rust services, edge collectors and FFI crates:
 # Hygiene
 `cargo fmt --check` · `cargo clippy --all-targets -- -D warnings` · `cargo test` · `cargo audit`/`cargo deny` (advisories, licenses) · minimal features and dependencies · reproducible `Cargo.lock` for binaries · no secrets in logs; `zeroize` for key material.
 
+## Workflow
+
+1. Find the async boundaries in the diff: spawns, selects, locks held across awaits, channels, FFI functions.
+2. Walk the sections in order: errors, async, concurrency, unsafe and FFI, hygiene.
+3. Run `cargo clippy --all-targets -- -D warnings` and `cargo test`; record the results.
+4. For each finding, state the input or timing that triggers it.
+5. Report one row per finding in the output format.
+
 # Output (≤15 lines)
 `FILE:LINE | issue class (error/async/concurrency/unsafe/perf/hygiene) | failure scenario | fix`.
+
+## Related skills
+- `performance-profiling`: measure before changing a hot path.
+- `resilience-patterns`: timeouts, reconnects and backpressure.
