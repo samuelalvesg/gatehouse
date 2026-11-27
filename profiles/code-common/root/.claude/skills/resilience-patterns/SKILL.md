@@ -25,5 +25,17 @@ Retry storms · retry inside retry · catch-all that swallows errors · infinite
 - **Rust**: `tokio::time::timeout`, bounded `mpsc`, `CancellationToken`/graceful-shutdown signal, no lock across `.await`, `tower` layers (timeout/retry/limit) where applicable, crash-safe writes.
 - **Dart/Flutter**: `Stream` subscriptions cancelled in `dispose`, retry with backoff in the data layer (not in widgets), offline queue persisted, UI shows offline/stale state.
 
+## Example
+
+Input (illustrative): `WeatherClient.Get()` calls an external API with no timeout.
+
+| DEPENDENCY | Failure mode | Timeout | Retry | Breaker/fallback | Backpressure | Idempotency | Test |
+|---|---|---|---|---|---|---|---|
+| weather API | call hangs | none → 3 s total | none → 2 attempts with jitter (GET is idempotent) | serve last cached value, marked stale | n/a | GET | fault injection: 30 s delay, assert return within 3 s |
+
 # Output (≤15 lines)
 `DEPENDENCY | failure mode | timeout | retry | breaker/fallback | backpressure | idempotency | test`.
+
+## Related skills
+- `fault-injection-testing`: prove the failure behaviour with injected faults.
+- `telemetry-tracing`: metrics and alerts for retries, breakers and queue depth.

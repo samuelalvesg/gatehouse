@@ -15,6 +15,15 @@ Model the design before the code is written, and again when it changes. The outp
 4. **Map each threat to a control.** Name the control that exists in the design, or mark the threat as open with an owner and a decision date.
 5. **Check the controls you already have.** Point to the skill that verifies each one: `web-app-security-audit` (access, uploads, headers), `api-change-review` (contracts, webhooks), `data-consistency-review` (concurrency, cache, money), `infra-config-review` (containers, pipelines, IaC).
 
+## Example
+
+Input (illustrative): a new webhook endpoint `/hooks/payments` receives calls from a third party.
+
+| Threat ID | Element | STRIDE | Threat | Control | Status | Owner |
+|---|---|---|---|---|---|---|
+| T1 | `/hooks/payments` | Spoofing | a fake sender calls the endpoint | HMAC signature check (`api-change-review` V6) | OPEN until the check is verified | backend dev |
+| T2 | `/hooks/payments` | Denial of service | a flood of calls exhausts the worker | rate limit per source (`web-app-security-audit` G2) | OPEN | backend dev |
+
 ## Output
 
 | Threat ID | Element | STRIDE | Threat | Control | Status | Owner |
@@ -27,3 +36,10 @@ Status: `MITIGATED` (control exists and is verified), `OPEN` (no control yet, de
 - Do not invent threats to fill the table. A small, accurate model is better than a long one.
 - Describe the design as it is, not as it should be. If the design is unknown, say so and mark the affected rows `NOT VERIFIED`.
 - Re-run the model when a new trust boundary or a new privileged role appears.
+
+## Related skills
+- `api-change-review`: contract and webhook controls.
+- `data-consistency-review`: concurrency, cache and money controls.
+- `infra-config-review`: container, pipeline and IaC controls.
+- `security-audit`: deeper audit modes.
+- `web-app-security-audit`: checklist that verifies each control.

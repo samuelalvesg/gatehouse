@@ -19,5 +19,18 @@ description: Review checklist of frequent defects in C#/.NET services and Flutte
 - **Platform/FFI**: generated bindings regenerated not edited; web vs native conditional imports; permissions and lifecycle handled.
 - **Tests**: widget tests for the 5 states, provider tests with overrides, golden tests only for stable UI, integration test that the app starts (cold start + native core responds).
 
+## Workflow
+
+1. Scope the review to the changed files (`git diff --stat`).
+2. Run the checklist for the language of each file (C# or Dart).
+3. For each finding, record file and line, the failure scenario, and the fix.
+4. Confirm a finding with a test or a reproducible step before reporting it as a defect; otherwise report it as a suspicion.
+5. Re-check the changed lines after the fix.
+
 # Output (≤15 lines)
 `FILE:LINE | area | issue | failure scenario | fix`.
+
+## Related skills
+- `performance-profiling`: measure before changing a hot path.
+- `query-performance-tuner`: EF Core and query defects.
+- `resilience-patterns`: timeouts, retries and breakers.

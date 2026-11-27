@@ -21,6 +21,15 @@ Decide who is affected before reading the diff: mobile apps that cannot be updat
 - **V10 Contract tests.** The published schema or proto is checked against the implementation in the test suite, and a consumer test exists for each breaking-risk field. `NOT VERIFIED` if the suite cannot run in this review.
 - **V11 Documentation.** The contract change is written where consumers read it, with an example request and response.
 
+## Example
+
+Input (illustrative): the diff renames `customer_name` to `name` in the response of `GET /customers/{id}`.
+
+| ID | Check | Status | Severity | Evidence | Fix |
+|---|---|---|---|---|---|
+| V1 | Compatibility | FAIL | CRITICAL | `CustomerResponse.cs:12` (field renamed) | keep `customer_name` alongside `name`; deprecate it with a date |
+| V3 | Deprecation | FAIL | HIGH | no deprecation note in the contract | mark `customer_name` deprecated and name its replacement |
+
 ## Related skills
 
 Security of the same endpoints: `web-app-security-audit`. Rollout of the change: `release-safety-review`.
